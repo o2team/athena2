@@ -1,0 +1,38 @@
+{
+  "name": "athena2",
+  "version": "0.0.1",
+  "description": "A build tool for front end",
+  "main": "index.js",
+  "scripts": {
+    "eslint:fix": "eslint --fix bin src test",
+    "eslint": "eslint bin src test"
+  },
+  "bin": {
+    "ath2": "bin/athena2",
+    "athena2": "bin/athena2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/o2team/athena2.git"
+  },
+  "keywords": [
+    "build-tool"
+  ],
+  "author": "luckyadam",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/o2team/athena2/issues"
+  },
+  "homepage": "https://github.com/o2team/athena2#readme",
+  "dependencies": {
+    "commander": "2.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.5.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1"
+  }
+}
