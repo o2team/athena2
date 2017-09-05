@@ -5,7 +5,7 @@ const fs = require('fs-extra')
 /**
  * get user dir
  */
-const homedir = function () {
+exports.homedir = function () {
   function homedir () {
     const env = process.env
     const home = env.HOME
@@ -24,11 +24,15 @@ const homedir = function () {
   return typeof os.homedir === 'function' ? os.homedir : homedir
 }()
 
+exports.getRootPath = function () {
+  return path.resolve(__dirname, '../../')
+}
+
 /**
  * get athena cache base root
  */
-function getAthenaPath () {
-  const athenaPath = path.join(homedir(), '.athena2')
+exports.getAthenaPath = function () {
+  const athenaPath = path.join(exports.homedir(), '.athena2')
   if (!fs.existsSync(athenaPath)) {
     fs.mkdirSync(athenaPath)
   }
@@ -38,8 +42,8 @@ function getAthenaPath () {
 /**
  * set athena config
  */
-function setConfig (config) {
-  const athenaPath = this.getAthenaPath()
+exports.setConfig = function (config) {
+  const athenaPath = exports.getAthenaPath()
   if (typeof config === 'object') {
     fs.writeFileSync(path.join(athenaPath, 'config.json'), JSON.stringify(config, null, 2))
   }
@@ -48,17 +52,27 @@ function setConfig (config) {
 /**
  * get athena config
  */
-function getConfig () {
-  const configPath = path.join(getAthenaPath(), 'config.json')
+exports.getConfig = function () {
+  const configPath = path.join(exports.getAthenaPath(), 'config.json')
   if (fs.existsSync(configPath)) {
     return require(configPath)
   }
   return {}
 }
 
-module.exports = {
-  homedir,
-  getAthenaPath,
-  setConfig,
-  getConfig
+exports.getSystemUsername = function () {
+  const config = exports.getConfig()
+  const userHome = exports.homedir()
+  const systemUsername = process.env.USER || path.basename(userHome)
+  return systemUsername
+}
+
+exports.getAthenaVersion = function () {
+  return require(path.join(exports.getRootPath(), 'package.json')).version
+}
+
+exports.printAthenaVersion = function () {
+  const athenaVersion = exports.getAthenaVersion()
+  console.log(`Version ${athenaVersion}`)
+  console.log()
 }
