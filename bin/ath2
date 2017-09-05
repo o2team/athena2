@@ -1,103 +1,16 @@
 #!/usr/bin/env node
 
-const chalk = require('chalk')
 const program = require('commander')
-const inquirer = require('inquirer')
 
-const Util = require('../src/util')
-
-const config = Util.getConfig()
-const userHome = Util.homedir()
-const systemUsername = process.env.USER || path.basename(userHome)
-
-const athenaVersion = require('../package.json').version
-
-function printAthenaVersion () {
-  console.log(`Version ${athenaVersion}`)
-  console.log()
-}
+const {
+  getAthenaVersion
+} = require('../src/util')
 
 program
-  .version(athenaVersion)
+  .version(getAthenaVersion())
+  .usage('<command> [options]')
 
 program
-  .command('init [url]')
-  .description('Init Athena')
-  .action(url => {
-    printAthenaVersion()
-    console.log(chalk.green(`Allo ${chalk.green.bold(config.username || systemUsername)} ! Happy to work now!🤡~`))
-    const prompts = []
-    if (!url) {
-      url = process.cwd()
-    }
-    if (!config.username) {
-      inquirer.prompt([{
-        type: 'confirm',
-        name: 'useSystemName',
-        message: `Do you want to use this name (${systemUsername})?`,
-        default: true
-      }]).then(answers => new Promise((resolve, reject) => {
-        if (answers.useSystemName) {
-          config.username = systemUsername
-          return reject()
-        }
-        resolve()
-      })).then(() => inquirer.prompt([{
-        type: 'input',
-        name: 'setNewName',
-        message: 'Give me your username'
-      }]), () => ({ setNewName: systemUsername })).then(answers => {
-        const username = answers.setNewName
-        setWorkspace({ username })
-      })
-    } else {
-      inquirer.prompt([{
-        type: 'confirm',
-        name: 'updateUsername',
-        message: `Do you want to update your name (${systemUsername})?`,
-        default: false
-      }]).then(answers => new Promise((resolve, reject) => {
-        if (answers.updateUsername) {
-          return resolve()
-        }
-        reject()
-      })).then(() => inquirer.prompt([{
-        type: 'input',
-        name: 'setNewName',
-        message: 'Give me your username'
-      }]), () => ({ setNewName: config.username })).then(answers => {
-        const username = answers.setNewName
-        setWorkspace({ username })
-      })
-    }
-
-    function setWorkspace ({ username }) {
-      config.username = username
-      if (!config.workspace) {
-        config.workspace = url
-        Util.setConfig(config)
-        console.log()
-        console.log(chalk.gray(`Now ${chalk.gray.bold('Athena')} will set the directory(${url}) to be workspace!`))
-      } else if (config.workspace !== url) {
-        inquirer.prompt({
-          type: 'confirm',
-          name: 'updateWorkspace',
-          message: `Update the old workspace ${config.workspace}?`,
-          default: false
-        }).then(answers => {
-          if (answers.updateWorkspace) {
-            config.workspace = url
-            Util.setConfig(config)
-            console.log()
-            console.log(chalk.gray(`Now ${chalk.gray.bold('Athena')} will set the directory(${url}) to be workspace!`))
-          } else {
-            Util.setConfig(config)
-            console.log()
-            console.log(chalk.gray(`The ${chalk.gray.bold('Athena')} workspace is still ${config.workspace}!`))
-          }
-        })
-      }
-    }
-  })
-
-program.parse(process.argv)
+  .command('init [url]', 'Init Athena')
+  .command('app [appName]', 'Create an app')
+  .parse(process.argv)

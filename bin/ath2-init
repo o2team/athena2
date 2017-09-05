@@ -1,0 +1,96 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const chalk = require('chalk')
+const inquirer = require('inquirer')
+
+const {
+  printAthenaVersion,
+  getSystemUsername,
+  getConfig,
+  setConfig
+} = require('../src/util')
+
+const config = getConfig()
+const systemUsername = getSystemUsername()
+
+program
+  .parse(process.argv)
+
+const args = program.args
+let url = args[0]
+
+printAthenaVersion()
+console.log(chalk.green(`Allo ${chalk.green.bold(config.username || systemUsername)} ! Happy to work now!🤡~`))
+const prompts = []
+if (!url) {
+  url = process.cwd()
+}
+if (!config.username) {
+  inquirer.prompt([{
+    type: 'confirm',
+    name: 'useSystemName',
+    message: `Do you want to use this name (${systemUsername})?`,
+    default: true
+  }]).then(answers => new Promise((resolve, reject) => {
+    if (answers.useSystemName) {
+      config.username = systemUsername
+      return reject()
+    }
+    resolve()
+  })).then(() => inquirer.prompt([{
+    type: 'input',
+    name: 'setNewName',
+    message: 'Give me your username'
+  }]), () => ({ setNewName: systemUsername })).then(answers => {
+    const username = answers.setNewName
+    setWorkspace({ username })
+  })
+} else {
+  inquirer.prompt([{
+    type: 'confirm',
+    name: 'updateUsername',
+    message: `Do you want to update your name (${systemUsername})?`,
+    default: false
+  }]).then(answers => new Promise((resolve, reject) => {
+    if (answers.updateUsername) {
+      return resolve()
+    }
+    reject()
+  })).then(() => inquirer.prompt([{
+    type: 'input',
+    name: 'setNewName',
+    message: 'Give me your username'
+  }]), () => ({ setNewName: config.username })).then(answers => {
+    const username = answers.setNewName
+    setWorkspace({ username })
+  })
+}
+
+function setWorkspace ({ username }) {
+  config.username = username
+  if (!config.workspace) {
+    config.workspace = url
+    setConfig(config)
+    console.log()
+    console.log(chalk.gray(`Now ${chalk.gray.bold('Athena')} will set the directory(${url}) to be workspace!`))
+  } else if (config.workspace !== url) {
+    inquirer.prompt({
+      type: 'confirm',
+      name: 'updateWorkspace',
+      message: `Update the old workspace ${chalk.gray(config.workspace)} ?`,
+      default: false
+    }).then(answers => {
+      if (answers.updateWorkspace) {
+        config.workspace = url
+        setConfig(config)
+        console.log()
+        console.log(chalk.gray(`Now ${chalk.gray.bold('Athena')} will set the directory(${url}) to be workspace!`))
+      } else {
+        setConfig(config)
+        console.log()
+        console.log(chalk.gray(`The ${chalk.gray.bold('Athena')} workspace is still ${config.workspace}!`))
+      }
+    })
+  }
+}

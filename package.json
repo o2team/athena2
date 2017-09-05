@@ -8,8 +8,7 @@
     "eslint": "eslint bin src test"
   },
   "bin": {
-    "ath2": "bin/ath2",
-    "athena2": "bin/ath2"
+    "ath2": "bin/ath2"
   },
   "repository": {
     "type": "git",

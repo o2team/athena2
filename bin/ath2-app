@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+
+program
+  .option('--name [appName]', 'App name')
+  .option('--description [appDescription]', 'App description')
+  .option('--sass', 'Use sass')
+  .option('--template [templateName]', 'Set template to use')
+  .option('--debug', 'Debug info')
+  .parse(process.argv)
