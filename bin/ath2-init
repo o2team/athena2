@@ -21,7 +21,7 @@ const args = program.args
 let url = args[0]
 
 printAthenaVersion()
-console.log(chalk.green(`Allo ${chalk.green.bold(config.username || systemUsername)} ! Happy to work now!🤡~`))
+console.log(chalk.green(`Allo ${chalk.green.bold(config.username || systemUsername)}! Happy to work now!🤡~`))
 const prompts = []
 if (!url) {
   url = process.cwd()

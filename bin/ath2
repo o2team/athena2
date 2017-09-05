@@ -9,8 +9,6 @@ const {
 program
   .version(getAthenaVersion())
   .usage('<command> [options]')
-
-program
   .command('init [url]', 'Init Athena')
-  .command('app [appName]', 'Create an app')
+  .command('app [appName]', 'Create an app').alias('a')
   .parse(process.argv)
