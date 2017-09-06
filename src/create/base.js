@@ -6,14 +6,19 @@ const editor = require('mem-fs-editor')
 const {
   getConfig,
   getSystemUsername,
-  getRootPath
+  getRootPath,
+  setConfig
 } = require('../util')
 
 class CreateBase {
   constructor () {
     const store = memFs.create()
     this.fs = editor.create(store)
-    this.username = getConfig().username || getSystemUsername()
+    this.username = getConfig().username
+    if (!this.username) {
+      this.username = getSystemUsername()
+      setConfig({ username: this.username })
+    }
     this.sourceRoot(path.join(getRootPath()))
     this.init()
   }
@@ -57,14 +62,14 @@ class CreateBase {
     return filepath
   }
 
-  template (type, source, dest, data, options) {
+  template (template, type, source, dest, data, options) {
     if (typeof dest !== 'string') {
       options = data
       data = dest
       dest = source
     }
     this.fs.copyTpl(
-      this.templatePath(type, source),
+      this.templatePath(template, type, source),
       this.destinationPath(dest),
       data || this,
       options
@@ -72,10 +77,15 @@ class CreateBase {
     return this
   }
 
-  copy (type, source, dest) {
+  copy (template, type, source, dest) {
     dest = dest || source
-    this.template(type, source, dest)
+    this.template(template, type, source, dest)
     return this
+  }
+
+  writeGitKeepFile (dirname) {
+    dirname = path.resolve(dirname)
+    fs.writeFileSync(path.join(dirname, '.gitkeep'), 'Place hold file', 'utf8')
   }
 
   write () {}

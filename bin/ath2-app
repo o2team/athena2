@@ -9,6 +9,7 @@ program
   .option('--name [appName]', 'App name')
   .option('--description [appDescription]', 'App description')
   .option('--sass', 'Use sass')
+  .option('--framework [framework]', 'Choose your favorite framework')
   .option('--template [templateName]', 'Set template to use')
   .option('--debug', 'Debug info')
   .parse(process.argv)
@@ -17,13 +18,13 @@ const args = program.args
 
 const appName = args[0] || program.name
 const description = program.description || ''
-const sass = program.sass
-const template = program.template
+const { sass, framework, template } = program
 
 const app = new App({
   appName,
   description,
   sass,
+  framework,
   template
 })
 
