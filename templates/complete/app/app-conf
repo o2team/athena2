@@ -1,0 +1,10 @@
+module.exports = {
+  app: '<%= appName %>',
+  appId: '<%= appId %>',
+  description: '<%= description %>',
+  createTime: '<%= date %>',
+  template: '<%= template %>',
+  platform: '<%= platform %>',
+  common: 'common',
+  moduleList: ['common']
+}
