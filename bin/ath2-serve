@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+
+const serve = require('../src/build/serve')
+
+program
+  .option('--debug', 'Debug info')
+  .parse(process.argv)
+
+const args = program.args
+const { debug } = program
+
+serve(args, { debug })

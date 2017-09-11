@@ -73,7 +73,7 @@ exports.getAthenaVersion = function () {
 
 exports.printAthenaVersion = function () {
   const athenaVersion = exports.getAthenaVersion()
-  console.log(`Version ${athenaVersion}`)
+  console.log(`Athena version ${athenaVersion}`)
   console.log()
 }
 
@@ -93,4 +93,94 @@ exports.shouldUseCnpm = function () {
   } catch (e) {
     return false
   }
+}
+
+function _normalizeFamily (family) {
+  return family ? family.toLowerCase() : 'ipv4'
+}
+
+exports.getLocalIp = function (name, family) {
+  const interfaces = os.networkInterfaces()
+  let all
+
+  //
+  // Default to `ipv4`
+  //
+  family = _normalizeFamily(family)
+
+  //
+  // If a specific network interface has been named,
+  // return the address.
+  //
+  if (name && name !== 'private' && name !== 'public') {
+    const res = interfaces[name].filter(details => {
+      const itemFamily = details.family.toLowerCase()
+      return itemFamily === family
+    })
+    if (res.length === 0) {
+      return undefined
+    }
+    return res[0].address
+  }
+
+  all = Object.keys(interfaces).map(nic => {
+    //
+    // Note: name will only be `public` or `private`
+    // when this is called.
+    //
+    const addresses = interfaces[nic].filter(details => {
+      details.family = details.family.toLowerCase()
+      if (details.family !== family || exports.isLoopback(details.address)) {
+        return false
+      } else if (!name) {
+        return true
+      }
+
+      return name === 'public' ? !exports.isPrivate(details.address) :
+      exports.isPrivate(details.address)
+    })
+
+    return addresses.length ? addresses[0].address : undefined
+  }).filter(Boolean)
+
+  return !all.length ? exports.loopback(family) : all[0]
+}
+
+exports.loopback = function loopback (family) {
+  //
+  // Default to `ipv4`
+  //
+  family = _normalizeFamily(family)
+
+  if (family !== 'ipv4' && family !== 'ipv6') {
+    throw new Error('family must be ipv4 or ipv6')
+  }
+
+  return family === 'ipv4' ? '127.0.0.1' : 'fe80::1'
+}
+
+exports.isLoopback = function isLoopback (addr) {
+  return /^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/
+    .test(addr) ||
+    /^fe80::1$/.test(addr) ||
+    /^::1$/.test(addr) ||
+    /^::$/.test(addr)
+}
+
+exports.isPrivate = function isPrivate(addr) {
+  return /^(::f{4}:)?10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/
+    .test(addr) ||
+    /^(::f{4}:)?192\.168\.([0-9]{1,3})\.([0-9]{1,3})$/.test(addr) ||
+    /^(::f{4}:)?172\.(1[6-9]|2\d|30|31)\.([0-9]{1,3})\.([0-9]{1,3})$/
+      .test(addr) ||
+    /^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/.test(addr) ||
+    /^(::f{4}:)?169\.254\.([0-9]{1,3})\.([0-9]{1,3})$/.test(addr) ||
+    /^fc00:/i.test(addr) ||
+    /^fe80:/i.test(addr) ||
+    /^::1$/.test(addr) ||
+    /^::$/.test(addr)
+},
+
+exports.isPublic = function isPublic(addr) {
+  return !exports.isPrivate(addr)
 }

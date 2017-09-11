@@ -10,8 +10,12 @@ const {
 
 module.exports = function create (creater, params, cb) {
   const { appName, appId, description, framework, sass, template, date, platform } = params
+  const commonDir = 'common'
   // create app dir
   fs.mkdirpSync(appName)
+  fs.mkdirpSync(path.join(appName, commonDir))
+  fs.mkdirpSync(path.join(appName, commonDir, 'page'))
+  fs.mkdirpSync(path.join(appName, commonDir, 'component'))
 
   // copy files
   creater.template(template, 'app', 'editorconfig', path.join(appName, '.editorconfig'))
@@ -36,7 +40,10 @@ module.exports = function create (creater, params, cb) {
   })
   creater.fs.commit(() => {
     console.log()
-    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created app directory: ${chalk.grey.bold(appName)}`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created app: ${chalk.grey.bold(appName)}`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${commonDir}`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${commonDir}/page`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${commonDir}/component`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.editorconfig`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.gitignore`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.eslintrc.js`)}`)
@@ -44,7 +51,6 @@ module.exports = function create (creater, params, cb) {
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/app.conf.js`)}`)
     console.log()
     const gitInitSpinner = ora(`cd ${chalk.cyan.bold(appName)}, executing ${chalk.cyan.bold('git init')}`).start()
-    console.log()
     process.chdir(appName)
     const gitInit = shelljs.exec('git init', { silent: true })
     if (gitInit.code === 0) {
@@ -56,7 +62,7 @@ module.exports = function create (creater, params, cb) {
     }
     // install
     let command
-    if (!shouldUseYarn()) {
+    if (shouldUseYarn()) {
       command = 'yarn install'
     } else if (shouldUseCnpm()) {
       command = 'cnpm install'
@@ -64,17 +70,16 @@ module.exports = function create (creater, params, cb) {
       command = 'npm install'
     }
     const installSpinner = ora(`Executing ${chalk.cyan.bold(command)}, it will take some time...`).start()
-    console.log()
     const install = shelljs.exec(command, { silent: true })
     if (install.code === 0) {
-      console.log(`${install.stderr}${install.stdout}`)
       installSpinner.color = 'green'
       installSpinner.succeed('Install success')
+      console.log(`${install.stderr}${install.stdout}`)
     } else {
       installSpinner.color = 'red'
-      installSpinner.fail(chalk.red('Install dependencies fail!Please cd in the app directory install yourself!'))
+      installSpinner.fail(chalk.red('Install dependencies failed! Please cd in the app directory install yourself!'))
+      console.log(`${install.stderr}${install.stdout}`)
     }
-    console.log()
     console.log(chalk.green(`Create app ${chalk.green.bold(appName)} Successfully!`))
     console.log(chalk.green(`Please cd ${chalk.green.bold(appName)} and start to work!😝`))
     if (typeof cb === 'function') {

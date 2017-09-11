@@ -22,7 +22,6 @@ let url = args[0]
 
 printAthenaVersion()
 console.log(chalk.green(`Allo ${chalk.green.bold(config.username || systemUsername)}! Happy to work now!🤡~`))
-const prompts = []
 if (!url) {
   url = process.cwd()
 }
@@ -35,7 +34,7 @@ if (!config.username) {
   }]).then(answers => new Promise((resolve, reject) => {
     if (answers.useSystemName) {
       config.username = systemUsername
-      return reject()
+      return reject(new Error())
     }
     resolve()
   })).then(() => inquirer.prompt([{
@@ -56,7 +55,7 @@ if (!config.username) {
     if (answers.updateUsername) {
       return resolve()
     }
-    reject()
+    reject(new Error())
   })).then(() => inquirer.prompt([{
     type: 'input',
     name: 'setNewName',
