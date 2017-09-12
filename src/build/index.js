@@ -51,6 +51,80 @@ exports.getConf = function () {
   }
 }
 
+exports.getEntry = function ({ appConf, appPath, moduleList = [] }) {
+  if (!moduleList.length) {
+    moduleList = appConf.moduleList
+  }
+  const entry = {}
+  moduleList.forEach(mod => {
+    const pagePath = path.join(appPath, mod, 'page')
+    const pageDirInfo = fs.readdirSync(pagePath)
+    pageDirInfo.forEach(item => {
+      const ext = path.extname(item)
+      if (!ext.length) {
+        let entryPath = path.join(pagePath, item, `${item}.js`)
+        if (!fs.existsSync(entryPath)) {
+          entryPath = path.join(pagePath, item, `index.js`)
+        }
+        entry[`${mod}/${item}`] = [
+          entryPath
+        ]
+      }
+    })
+  })
+  return entry
+}
+
+exports.getPageHtml = function ({ appConf, appPath, moduleList = [] }) {
+  if (!moduleList.length) {
+    moduleList = appConf.moduleList
+  }
+  const pageHtml = {}
+  moduleList.forEach(mod => {
+    const pagePath = path.join(appPath, mod, 'page')
+    const pageDirInfo = fs.readdirSync(pagePath)
+    if (!pageHtml[mod]) {
+      pageHtml[mod] = {}
+    }
+    pageDirInfo.forEach(item => {
+      const ext = path.extname(item)
+      if (!ext.length) {
+        let filename = `${item}.html`
+        let pageHtmlPath = path.join(pagePath, item, filename)
+        if (!fs.existsSync(pageHtmlPath)) {
+          filename = `index.html`
+          pageHtmlPath = path.join(pagePath, item, filename)
+        }
+        let title = ''
+        try {
+          const htmlContents = String(fs.readFileSync(pageHtmlPath))
+          const matchs = htmlContents.match(/<title[^>]*>([^<]+)<\/title>/)
+          if (matchs) {
+            title = matchs[1]
+          }
+        } catch (e) {
+          title = ''
+        }
+        pageHtml[mod][item] = {
+          filepath: pageHtmlPath,
+          filename,
+          title
+        }
+      }
+    })
+  })
+  return pageHtml
+}
+
+function loadComponent () {
+
+}
+
+exports.compileHtmlFile = function (fPath) {
+  const htmlStr = String(fs.readFileSync(fPath))
+
+}
+
 exports.createCompiler = function (webpack, config) {
   let compiler
   try {

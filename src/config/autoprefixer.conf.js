@@ -4,7 +4,7 @@ module.exports = {
     'ie >= 8',
     'Chrome >= 21',
     'Firefox >= 1',
-    'Edge 13'
+    'Edge >= 13'
   ],
   mobile: [
     'Android >= 4',

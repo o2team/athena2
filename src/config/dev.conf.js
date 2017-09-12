@@ -9,7 +9,11 @@ module.exports = function () {
         {
           oneOf: [
             {
-              test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+              test: /\.html$/,
+              loader: require.resolve('html-loader')
+            },
+            {
+              test: /\.bmp|\.gif|\.jpe?g|\.png$/,
               loader: require.resolve('url-loader'),
               options: {
                 limit: 10000,
@@ -48,7 +52,7 @@ module.exports = function () {
               ]
             },
             {
-              exclude: [/\.js$/, /\.html$/, /\.json$/],
+              exclude: /\.js|\.html|\.json|\.ejs$/,
               loader: require.resolve('file-loader'),
               options: {
                 name: 'static/media/[name].[hash:8].[ext]'

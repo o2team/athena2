@@ -1,19 +1,18 @@
 const path = require('path')
-const fs = require('fs-extra')
 const chalk = require('chalk')
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
 const webpackMerge = require('webpack-merge')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ora = require('ora')
 
-const {
-  printAthenaVersion
-} = require('../util')
-
+const { getRootPath } = require('../util')
 const open = require('../util/open')
 
 const {
   getConf,
+  getEntry,
+  getPageHtml,
   createCompiler,
   prepareUrls,
   BUILD_APP,
@@ -26,7 +25,6 @@ const host = process.env.HOST || '0.0.0.0'
 const port = parseInt(process.env.PORT, 10) || 3000
 
 module.exports = function serve (args, options) {
-  printAthenaVersion()
   const serveSpinner = ora(chalk.green(`Starting development server, please wait🤡~`)).start()
   const conf = getConf()
   const appConf = conf.appConf
@@ -51,6 +49,26 @@ function serveApp (conf, webpackBaseConf, serveSpinner) {
   const webpackDevServerConf = require('../config/devServer.conf')(conf.appPath, urls.lanUrlForConfig)
   const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf)
   const entry = getEntry(conf)
+  const htmlPages = getPageHtml(conf)
+  const htmlPlugins = [
+    new HtmlWebpackPlugin({
+      title: conf.appConf.app,
+      filename: 'index.html',
+      template: path.join(getRootPath(), 'src', 'config', 'sitemap_template.ejs'),
+      data: {
+        htmlPages
+      }
+    })
+  ]
+  for (const mod in htmlPages) {
+    for (const page in htmlPages[mod]) {
+      const pageItem = htmlPages[mod][page]
+      htmlPlugins.push(new HtmlWebpackPlugin({
+        filename: `${mod}/${pageItem.filename}`,
+        template: pageItem.filepath
+      }))
+    }
+  }
   webpackConf.entry = entry
   webpackConf.output = {
     path: path.join(conf.appPath, 'dist'),
@@ -58,6 +76,7 @@ function serveApp (conf, webpackBaseConf, serveSpinner) {
     publicPath: '/',
     chunkFilename: 'chunk/[name].chunk.js'
   }
+  webpackConf.plugins = webpackConf.plugins.concat(htmlPlugins)
   const compiler = createCompiler(webpack, webpackConf)
   const devServer = new WebpackDevServer(compiler, webpackDevServerConf)
   devServer.listen(port, host, err => {
@@ -76,28 +95,4 @@ function serveApp (conf, webpackBaseConf, serveSpinner) {
 
 function serveModule () {
 
-}
-
-function getEntry ({ appConf, appPath, moduleList = [] }) {
-  if (!moduleList.length) {
-    moduleList = appConf.moduleList
-  }
-  const entry = {}
-  moduleList.forEach(mod => {
-    const pagePath = path.join(appPath, mod, 'page')
-    const pageDirInfo = fs.readdirSync(pagePath)
-    pageDirInfo.forEach(item => {
-      const ext = path.extname(item)
-      if (!ext.length) {
-        let entryPath = path.join(pagePath, item, `${item}.js`)
-        if (!fs.existsSync(entryPath)) {
-          entryPath = path.join(pagePath, item, `index.js`)
-        }
-        entry[`${mod}/${item}`] = [
-          entryPath
-        ]
-      }
-    })
-  })
-  return entry
 }

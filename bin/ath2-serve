@@ -2,7 +2,11 @@
 
 const program = require('commander')
 
-const serve = require('../src/build/serve')
+const {
+  printAthenaVersion
+} = require('../src/util')
+
+printAthenaVersion()
 
 program
   .option('--debug', 'Debug info')
@@ -11,4 +15,5 @@ program
 const args = program.args
 const { debug } = program
 
+const serve = require('../src/build/serve')
 serve(args, { debug })
