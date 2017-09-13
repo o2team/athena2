@@ -1,9 +1,6 @@
 const path = require('path')
 
-const protocol = process.env.HTTPS === 'true' ? 'https' : 'http'
-const host = process.env.HOST || '0.0.0.0'
-
-module.exports = function (appPath, publicUrl) {
+module.exports = function (appPath, protocol, host, publicUrl) {
   return {
     disableHostCheck: process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
     compress: true,

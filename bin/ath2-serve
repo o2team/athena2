@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
 const program = require('commander')
+const chalk = require('chalk')
 
 const {
-  printAthenaVersion
+  printAthenaVersion,
+  getConfig
 } = require('../src/util')
 
 printAthenaVersion()
@@ -14,6 +16,9 @@ program
 
 const args = program.args
 const { debug } = program
+
+console.log(chalk.green(`Allo ${chalk.bold(getConfig().username)}! Starting development mode...`))
+console.log()
 
 const serve = require('../src/build/serve')
 serve(args, { debug })

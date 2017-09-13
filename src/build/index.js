@@ -9,6 +9,10 @@ exports.BUILD_MODULE = 'module'
 exports.BUILD_APP = 'app'
 exports.BUILD_NONE = 'none'
 
+exports.PROTOCOL = process.env.HTTPS === 'true' ? 'https' : 'http'
+exports.HOST = process.env.HOST || '0.0.0.0'
+exports.PORT = parseInt(process.env.PORT, 10) || 3000
+
 exports.getConf = function () {
   const rootPath = process.cwd()
   let appConf = null
