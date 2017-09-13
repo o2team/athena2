@@ -1,7 +1,9 @@
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
 
-module.exports = function () {
+const autoprefixerConf = require('./autoprefixer.conf')
+
+module.exports = function (appPath, template, platform, framework) {
   return {
     devtool: 'inline-source-map',
     module: {
@@ -10,6 +12,7 @@ module.exports = function () {
           oneOf: [
             {
               test: /\.html$/,
+              exclude: /page/,
               loader: require.resolve('html-loader')
             },
             {
@@ -37,12 +40,7 @@ module.exports = function () {
                     plugins: () => [
                       require('postcss-flexbugs-fixes'),
                       autoprefixer({
-                        browsers: [
-                          '>1%',
-                          'last 4 versions',
-                          'Firefox ESR',
-                          'not ie < 9'
-                        ],
+                        browsers: autoprefixerConf[platform],
                         flexbox: 'no-2009'
                       })
                     ]
@@ -63,6 +61,11 @@ module.exports = function () {
       ]
     },
     plugins: [
+      new webpack.LoaderOptionsPlugin({
+        htmlLoader: {
+          attrs: ['img:src', 'link:href', 'data-src']
+        }
+      }),
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NoEmitOnErrorsPlugin()
     ]

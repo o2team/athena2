@@ -45,7 +45,9 @@ module.exports = function serve (args, options) {
 
 function serveApp (conf, webpackBaseConf, serveSpinner) {
   const urls = prepareUrls(protocol, host, port)
-  const webpackDevConf = require('../config/dev.conf')()
+  const appConf = conf.appConf
+  const { template, framework, platform } = appConf
+  const webpackDevConf = require('../config/dev.conf')(conf.appPath, template, platform, framework)
   const webpackDevServerConf = require('../config/devServer.conf')(conf.appPath, urls.lanUrlForConfig)
   const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf)
   const entry = getEntry(conf)
