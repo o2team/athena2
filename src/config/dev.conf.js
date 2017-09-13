@@ -16,15 +16,31 @@ module.exports = function (appPath, template, platform, framework) {
               loader: require.resolve('html-loader')
             },
             {
-              test: /\.bmp|\.gif|\.jpe?g|\.png$/,
+              test: /\.(png|jpe?g|gif|bpm|svg)(\?.*)?$/,
               loader: require.resolve('url-loader'),
               options: {
                 limit: 10000,
-                name: 'static/media/[name].[hash:8].[ext]'
+                name: 'static/images/[name].[ext]'
               }
             },
             {
-              test: /\.css|\.scss|\.sass$/,
+              test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+              loader: require.resolve('url-loader'),
+              options: {
+                limit: 10000,
+                name: 'static/media/[name].[ext]'
+              }
+            },
+            {
+              test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+              loader: require.resolve('url-loader'),
+              options: {
+                limit: 10000,
+                name: 'static/fonts/[name].[ext]'
+              }
+            },
+            {
+              test: /\.(css|\.scss|\.sass)(\?.*)?$/,
               use: [
                 require.resolve('style-loader'),
                 {
@@ -51,9 +67,9 @@ module.exports = function (appPath, template, platform, framework) {
             },
             {
               exclude: /\.js|\.html|\.json|\.ejs$/,
-              loader: require.resolve('file-loader'),
+              loader: require.resolve('url-loader'),
               options: {
-                name: 'static/media/[name].[hash:8].[ext]'
+                name: 'static/ext/[name].[ext]'
               }
             }
           ]

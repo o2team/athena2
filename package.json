@@ -36,7 +36,6 @@
     "chalk": "2.1.0",
     "commander": "2.11.0",
     "css-loader": "0.28.7",
-    "file-loader": "0.11.2",
     "fs-extra": "4.0.1",
     "html-loader": "0.5.1",
     "html-webpack-harddisk-plugin": "0.1.0",
