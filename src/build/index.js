@@ -116,15 +116,6 @@ exports.getPageHtml = function ({ appConf, appPath, moduleList = [] }) {
   return pageHtml
 }
 
-function loadComponent () {
-
-}
-
-exports.compileHtmlFile = function (fPath) {
-  const htmlStr = String(fs.readFileSync(fPath))
-
-}
-
 exports.createCompiler = function (webpack, config) {
   let compiler
   try {

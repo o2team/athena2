@@ -65,7 +65,8 @@ function serveApp (conf, webpackBaseConf, serveSpinner) {
       const pageItem = htmlPages[mod][page]
       htmlPlugins.push(new HtmlWebpackPlugin({
         filename: `${mod}/${pageItem.filename}`,
-        template: pageItem.filepath
+        template: pageItem.filepath,
+        chunks: [`${mod}/${page}`]
       }))
     }
   }
