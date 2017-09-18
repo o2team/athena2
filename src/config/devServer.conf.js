@@ -1,5 +1,3 @@
-const path = require('path')
-
 module.exports = function ({publicPath, contentBase, protocol, host, publicUrl}) {
   return {
     disableHostCheck: process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',

@@ -101,8 +101,6 @@ function _normalizeFamily (family) {
 
 exports.getLocalIp = function (name, family) {
   const interfaces = os.networkInterfaces()
-  let all
-
   //
   // Default to `ipv4`
   //
@@ -123,7 +121,7 @@ exports.getLocalIp = function (name, family) {
     return res[0].address
   }
 
-  all = Object.keys(interfaces).map(nic => {
+  const all = Object.keys(interfaces).map(nic => {
     //
     // Note: name will only be `public` or `private`
     // when this is called.
@@ -136,10 +134,9 @@ exports.getLocalIp = function (name, family) {
         return true
       }
 
-      return name === 'public' ? !exports.isPrivate(details.address) :
-      exports.isPrivate(details.address)
+      return name === 'public' ? !exports.isPrivate(details.address)
+        : exports.isPrivate(details.address)
     })
-
     return addresses.length ? addresses[0].address : undefined
   }).filter(Boolean)
 
@@ -179,7 +176,7 @@ exports.isPrivate = function isPrivate (addr) {
     /^fe80:/i.test(addr) ||
     /^::1$/.test(addr) ||
     /^::$/.test(addr)
-},
+}
 
 exports.isPublic = function isPublic (addr) {
   return !exports.isPrivate(addr)
