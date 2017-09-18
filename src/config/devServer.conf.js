@@ -11,7 +11,7 @@ module.exports = function (appPath, protocol, host, publicUrl) {
     publicPath: '/',
     quiet: true,
     watchOptions: {
-      ignored: /node_modules/,
+      ignored: /node_modules/
     },
     https: protocol === 'https',
     host: host,

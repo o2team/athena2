@@ -9,6 +9,7 @@ const ora = require('ora')
 
 const { getRootPath } = require('../util')
 const open = require('../util/open')
+const formatWebpackMessage = require('../util/format_webpack_message')
 
 const {
   getConf,
@@ -29,17 +30,17 @@ module.exports = function serve (args, options) {
   conf.args = args
   switch (conf.buildType) {
     case BUILD_APP:
-      serveApp(conf)
+      serveApp(conf, options)
       break
     case BUILD_MODULE:
-      serveModule(conf)
+      serveModule(conf, options)
       break
     case BUILD_NONE:
       throw new Error('Serve error, the current directory is not an app or a module!')
   }
 }
 
-function serveCore (conf) {
+function serveCore (conf, options) {
   const serveSpinner = ora(`Starting development server, please wait🤡~`).start()
   const urls = prepareUrls(PROTOCOL, HOST, PORT)
   const appConf = conf.appConf
@@ -93,29 +94,46 @@ function serveCore (conf) {
       return console.log(err)
     }
   })
-  devServer.middleware.waitUntilValid(() => {
-    serveSpinner.succeed('Build success!')
-    console.log()
-    console.log(chalk.cyan('> Listening at ' + urls.lanUrlForTerminal))
-    console.log(chalk.cyan('> Listening at ' + urls.localUrlForBrowser))
-    open(urls.localUrlForBrowser)
+  let isFirstCompile = true
+  compiler.plugin('invalid', () => {
+    serveSpinner.render()
+    serveSpinner.text = 'Compiling...🤡~'
+  })
+  compiler.plugin('done', stats => {
+    const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
+    const isSuccess = !errors.length && !warnings.length
+    if (isSuccess) {
+      serveSpinner.succeed(chalk.green('Compile success!\n'))
+    }
+    if (errors.length) {
+      errors.splice(1)
+      serveSpinner.fail(chalk.red('Compile failed!\n'))
+      console.log(errors.join('\n\n'))
+      console.log()
+    }
+    if (isFirstCompile) {
+      console.log(chalk.cyan('> Listening at ' + urls.lanUrlForTerminal))
+      console.log(chalk.cyan('> Listening at ' + urls.localUrlForBrowser))
+      open(urls.localUrlForBrowser)
+      isFirstCompile = false
+    }
   })
 }
 
-function serveApp (conf) {
+function serveApp (conf, options) {
   conf.moduleList = conf.args
   delete conf.args
   if (!conf.moduleList || !conf.moduleList.length) {
     conf.moduleList = conf.appConf.moduleList
   }
   console.log(`Current building modules ${chalk.bold(conf.moduleList.join(' '))}!`)
-  serveCore(conf)
+  serveCore(conf, options)
 }
 
-function serveModule (conf) {
+function serveModule (conf, options) {
   const moduleConf = conf.moduleConf
   conf.moduleList = [moduleConf.module]
   delete conf.args
   console.log(`Current building module ${chalk.bold(conf.moduleList[0])}!`)
-  serveCore(conf)
+  serveCore(conf, options)
 }
