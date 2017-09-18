@@ -6,6 +6,11 @@ const uuid = require('uuid')
 
 const CreateBase = require('./base')
 
+const {
+  shouldUseYarn,
+  shouldUseCnpm
+} = require('../util')
+
 class App extends CreateBase {
   constructor (options) {
     super()
@@ -14,8 +19,7 @@ class App extends CreateBase {
       description: '',
       framework: null,
       template: null,
-      platform: null,
-      sass: false
+      platform: null
     }, options)
   }
 
@@ -145,15 +149,6 @@ class App extends CreateBase {
       }
     }
 
-    if (conf.sass === undefined) {
-      prompts.push({
-        type: 'confirm',
-        name: 'sass',
-        message: 'Do you wanna use sass?',
-        default: true
-      })
-    }
-
     const frameworkChoices = [{
       name: 'Nerv',
       value: 'nerv'
@@ -195,8 +190,12 @@ class App extends CreateBase {
 
   write () {
     const { template } = this.conf
+
     const templateCreate = require(path.join(this.templatePath(), template, 'index.js'))
-    templateCreate(this, this.conf)
+    templateCreate.app(this, this.conf, {
+      shouldUseYarn,
+      shouldUseCnpm
+    })
   }
 }
 

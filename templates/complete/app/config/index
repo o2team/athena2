@@ -1,0 +1,13 @@
+const defaultConfig = {
+  sourceRoot: 'src',
+  buildRoot: 'dist',
+  publicPath: '/',
+  staticDirectory: 'static'
+}
+let config
+if (process.env.NODE_ENV === 'development') {
+  config = require('./dev')
+} else {
+  config = require('./prod')
+}
+module.exports = Object.assign({}, defaultConfig, config)
