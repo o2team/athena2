@@ -2,4 +2,4 @@
 
 > Build tool for O2
 
-![](./athena.jpg)
+<img src="./athena.jpg" width="240">
