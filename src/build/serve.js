@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
 const ora = require('ora')
 
-const { getRootPath } = require('../util')
+const { getRootPath, formatTime } = require('../util')
 const open = require('../util/open')
 const formatWebpackMessage = require('../util/format_webpack_message')
 
@@ -95,7 +95,8 @@ function serveCore (conf, options) {
     }
   })
   let isFirstCompile = true
-  compiler.plugin('invalid', () => {
+  compiler.plugin('invalid', filepath => {
+    console.log(chalk.grey(`[${formatTime()}]Modified: ${filepath}`))
     serveSpinner.render()
     serveSpinner.text = 'Compiling...🤡~'
   })
@@ -114,6 +115,7 @@ function serveCore (conf, options) {
     if (isFirstCompile) {
       console.log(chalk.cyan('> Listening at ' + urls.lanUrlForTerminal))
       console.log(chalk.cyan('> Listening at ' + urls.localUrlForBrowser))
+      console.log()
       open(urls.localUrlForBrowser)
       isFirstCompile = false
     }

@@ -167,7 +167,7 @@ exports.isLoopback = function isLoopback (addr) {
     /^::$/.test(addr)
 }
 
-exports.isPrivate = function isPrivate(addr) {
+exports.isPrivate = function isPrivate (addr) {
   return /^(::f{4}:)?10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/
     .test(addr) ||
     /^(::f{4}:)?192\.168\.([0-9]{1,3})\.([0-9]{1,3})$/.test(addr) ||
@@ -181,6 +181,25 @@ exports.isPrivate = function isPrivate(addr) {
     /^::$/.test(addr)
 },
 
-exports.isPublic = function isPublic(addr) {
+exports.isPublic = function isPublic (addr) {
   return !exports.isPrivate(addr)
+}
+
+exports.zeroPad = function (num, places) {
+  const zero = places - num.toString().length + 1
+  return Array(+(zero > 0 && zero)).join('0') + num
+}
+
+exports.formatTime = function (date) {
+  if (!date) {
+    date = new Date()
+  } else if (!(date instanceof Date)) {
+    date = new Date(date)
+  }
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+  const hour = date.getHours()
+  const minute = date.getMinutes()
+  return `${year}-${exports.zeroPad(month, 2)}-${exports.zeroPad(day, 2)} ${exports.zeroPad(hour, 2)}:${exports.zeroPad(minute, 2)}`
 }
