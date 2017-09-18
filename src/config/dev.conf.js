@@ -40,7 +40,7 @@ module.exports = function (appPath, template, platform, framework) {
               }
             },
             {
-              test: /\.(css|\.scss|\.sass)(\?.*)?$/,
+              test: /\.(css|scss|sass)(\?.*)?$/,
               use: [
                 require.resolve('style-loader'),
                 {
