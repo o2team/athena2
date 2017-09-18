@@ -1,14 +1,14 @@
 const path = require('path')
 
-module.exports = function (appPath, protocol, host, publicUrl) {
+module.exports = function ({publicPath, contentBase, protocol, host, publicUrl}) {
   return {
     disableHostCheck: process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
     compress: true,
     clientLogLevel: 'none',
-    contentBase: path.join(appPath, 'dist'),
+    contentBase,
     watchContentBase: true,
     hot: true,
-    publicPath: '/',
+    publicPath,
     quiet: true,
     watchOptions: {
       ignored: /node_modules/

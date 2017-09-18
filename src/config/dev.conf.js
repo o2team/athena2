@@ -1,9 +1,11 @@
+const path = require('path')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
 
 const autoprefixerConf = require('./autoprefixer.conf')
 
-module.exports = function (appPath, template, platform, framework) {
+module.exports = function (appPath, buildConfig, template, platform, framework) {
+  const { staticDirectory } = buildConfig
   return {
     devtool: 'inline-source-map',
     module: {
@@ -20,7 +22,7 @@ module.exports = function (appPath, template, platform, framework) {
               loader: require.resolve('url-loader'),
               options: {
                 limit: 10000,
-                name: 'static/images/[name].[ext]'
+                name: path.join(staticDirectory, 'images/[name].[ext]')
               }
             },
             {
@@ -28,7 +30,7 @@ module.exports = function (appPath, template, platform, framework) {
               loader: require.resolve('url-loader'),
               options: {
                 limit: 10000,
-                name: 'static/media/[name].[ext]'
+                name: path.join(staticDirectory, 'media/[name].[ext]')
               }
             },
             {
@@ -36,7 +38,7 @@ module.exports = function (appPath, template, platform, framework) {
               loader: require.resolve('url-loader'),
               options: {
                 limit: 10000,
-                name: 'static/fonts/[name].[ext]'
+                name: path.join(staticDirectory, 'fonts/[name].[ext]')
               }
             },
             {
@@ -69,7 +71,7 @@ module.exports = function (appPath, template, platform, framework) {
               exclude: /\.js|\.html|\.json|\.ejs$/,
               loader: require.resolve('url-loader'),
               options: {
-                name: 'static/ext/[name].[ext]'
+                name: path.join(staticDirectory, 'ext/[name].[ext]')
               }
             }
           ]

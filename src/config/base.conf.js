@@ -1,9 +1,12 @@
 const path = require('path')
+const webpack = require('webpack')
+
 const Util = require('../util')
 
 const autoprefixerConf = require('./autoprefixer.conf')
 
-module.exports = function (appPath, template, platform, framework) {
+module.exports = function (appPath, buildConfig, template, platform, framework) {
+  const { env = {}, defineConstants = {} } = buildConfig
   return {
     module: {
       rules: [
@@ -59,6 +62,11 @@ module.exports = function (appPath, template, platform, framework) {
     },
     resolveLoader: {
       modules: [path.join(Util.getRootPath(), 'node_modules'), 'node_modules']
-    }
+    },
+    plugins: [
+      new webpack.DefinePlugin(Object.assign({
+        'process.env': env
+      }, defineConstants))
+    ]
   }
 }

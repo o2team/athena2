@@ -21,4 +21,6 @@ console.log(chalk.green(`Allo ${chalk.bold(getConfig().username)}! Starting deve
 console.log()
 
 const serve = require('../src/build/serve')
+process.env.NODE_ENV = 'development'
+
 serve(args, { debug })

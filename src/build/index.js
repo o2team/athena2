@@ -9,9 +9,13 @@ exports.BUILD_MODULE = 'module'
 exports.BUILD_APP = 'app'
 exports.BUILD_NONE = 'none'
 
-exports.PROTOCOL = process.env.HTTPS === 'true' ? 'https' : 'http'
-exports.HOST = process.env.HOST || '0.0.0.0'
-exports.PORT = parseInt(process.env.PORT, 10) || 3000
+exports.DEFAULT_PROTOCOL = 'http'
+exports.DEFAULT_HOST = '0.0.0.0'
+exports.DEFAULT_PORT = 3000
+exports.DEFAULT_BUILD_ROOT = 'dist'
+exports.DEFAULT_PUBLIC_PATH = '/'
+exports.DEFAULT_STATIC_DIRECTORY = 'static'
+exports.DEFAULT_CHUNK_DIRECTORY = 'chunk'
 
 exports.getConf = function () {
   const rootPath = process.cwd()
@@ -55,13 +59,18 @@ exports.getConf = function () {
   }
 }
 
-exports.getEntry = function ({ appConf, appPath, moduleList = [] }) {
+exports.getAppBuildConfig = function (appPath) {
+  return require(path.join(appPath, 'config'))
+}
+
+exports.getEntry = function ({ appConf, appPath, moduleList = [], buildConfig = {} }) {
   if (!moduleList.length) {
     moduleList = appConf.moduleList
   }
   const entry = {}
+  const sourceRoot = buildConfig.sourceRoot
   moduleList.forEach(mod => {
-    const pagePath = path.join(appPath, mod, 'page')
+    const pagePath = path.join(appPath, sourceRoot, mod, 'page')
     const pageDirInfo = fs.readdirSync(pagePath)
     pageDirInfo.forEach(item => {
       const ext = path.extname(item)
@@ -79,13 +88,14 @@ exports.getEntry = function ({ appConf, appPath, moduleList = [] }) {
   return entry
 }
 
-exports.getPageHtml = function ({ appConf, appPath, moduleList = [] }) {
+exports.getPageHtml = function ({ appConf, appPath, moduleList = [], buildConfig = {} }) {
   if (!moduleList.length) {
     moduleList = appConf.moduleList
   }
   const pageHtml = {}
+  const sourceRoot = buildConfig.sourceRoot
   moduleList.forEach(mod => {
-    const pagePath = path.join(appPath, mod, 'page')
+    const pagePath = path.join(appPath, sourceRoot, mod, 'page')
     const pageDirInfo = fs.readdirSync(pagePath)
     if (!pageHtml[mod]) {
       pageHtml[mod] = {}

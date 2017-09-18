@@ -13,13 +13,18 @@ const formatWebpackMessage = require('../util/format_webpack_message')
 
 const {
   getConf,
+  getAppBuildConfig,
   getEntry,
   getPageHtml,
   createCompiler,
   prepareUrls,
-  PROTOCOL,
-  HOST,
-  PORT,
+  DEFAULT_PROTOCOL,
+  DEFAULT_HOST,
+  DEFAULT_PORT,
+  DEFAULT_BUILD_ROOT,
+  DEFAULT_STATIC_DIRECTORY,
+  DEFAULT_PUBLIC_PATH,
+  DEFAULT_CHUNK_DIRECTORY,
   BUILD_APP,
   BUILD_MODULE,
   BUILD_NONE
@@ -36,18 +41,25 @@ module.exports = function serve (args, options) {
       serveModule(conf, options)
       break
     case BUILD_NONE:
-      throw new Error('Serve error, the current directory is not an app or a module!')
+      console.log(chalk.red('✖ Serve error, the current directory is not an app or a module!'))
+      console.log(chalk.bold('GoodBye!'))
+      break
   }
 }
 
 function serveCore (conf, options) {
   const serveSpinner = ora(`Starting development server, please wait🤡~`).start()
-  const urls = prepareUrls(PROTOCOL, HOST, PORT)
   const appConf = conf.appConf
+  const buildConfig = getAppBuildConfig(conf.appPath)
+  buildConfig.staticDirectory = buildConfig.staticDirectory || DEFAULT_STATIC_DIRECTORY
+  conf.buildConfig = buildConfig
+  const protocol = buildConfig.protocol || DEFAULT_PROTOCOL
+  const host = buildConfig.host || DEFAULT_HOST
+  const port = buildConfig.port || DEFAULT_PORT
+  const urls = prepareUrls(protocol, host, port)
   const { template, framework, platform } = appConf
-  const webpackBaseConf = require('../config/base.conf')(conf.appPath, template, platform, framework)
-  const webpackDevConf = require('../config/dev.conf')(conf.appPath, template, platform, framework)
-  const webpackDevServerConf = require('../config/devServer.conf')(conf.appPath, PROTOCOL, HOST, urls.lanUrlForConfig)
+  const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
+  const webpackDevConf = require('../config/dev.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf)
   const htmlPages = getPageHtml(conf)
   const htmlPlugins = [
@@ -80,16 +92,25 @@ function serveCore (conf, options) {
     entryItem.unshift(require.resolve('webpack-dev-server/client') + '?/')
   }
   webpackConf.entry = entry
+  const publicPath = buildConfig.publicPath || DEFAULT_PUBLIC_PATH
+  const contentBase = path.join(conf.appPath, buildConfig.buildRoot || DEFAULT_BUILD_ROOT)
   webpackConf.output = {
-    path: path.join(conf.appPath, 'dist'),
+    path: contentBase,
     filename: '[name].js',
-    publicPath: '/',
-    chunkFilename: 'chunk/[name].chunk.js'
+    publicPath,
+    chunkFilename: `${buildConfig.chunkDirectory || DEFAULT_CHUNK_DIRECTORY}/[name].chunk.js`
   }
   webpackConf.plugins = webpackConf.plugins.concat(htmlPlugins)
   const compiler = createCompiler(webpack, webpackConf)
+  const webpackDevServerConf = require('../config/devServer.conf')({
+    publicPath,
+    contentBase,
+    protocol,
+    host,
+    publicUrl: urls.lanUrlForConfig
+  })
   const devServer = new WebpackDevServer(compiler, webpackDevServerConf)
-  devServer.listen(PORT, HOST, err => {
+  devServer.listen(port, host, err => {
     if (err) {
       return console.log(err)
     }
