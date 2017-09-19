@@ -73,7 +73,7 @@ exports.getAthenaVersion = function () {
 
 exports.printAthenaVersion = function () {
   const athenaVersion = exports.getAthenaVersion()
-  console.log(`Athena version ${athenaVersion}`)
+  console.log(`👩  Athena v${athenaVersion}`)
   console.log()
 }
 
