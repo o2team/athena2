@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
 const ora = require('ora')
 
-const { getRootPath, formatTime } = require('../util')
+const { getRootPath, isEmptyObject, formatTime } = require('../util')
 const open = require('../util/open')
 const formatWebpackMessage = require('../util/format_webpack_message')
 
@@ -53,6 +53,12 @@ function serveCore (conf, options) {
   const buildConfig = getAppBuildConfig(conf.appPath)
   buildConfig.staticDirectory = buildConfig.staticDirectory || DEFAULT_STATIC_DIRECTORY
   conf.buildConfig = buildConfig
+  const entry = getEntry(conf)
+  if (isEmptyObject(entry)) {
+    serveSpinner.fail(chalk.red(`No file to compile, please check if the ${chalk.bold('page')} directories are empty!`))
+    console.log(chalk.bold('GoodBye!'))
+    process.exit(1)
+  }
   const protocol = buildConfig.protocol || DEFAULT_PROTOCOL
   const host = buildConfig.host || DEFAULT_HOST
   const port = buildConfig.port || DEFAULT_PORT
@@ -85,7 +91,6 @@ function serveCore (conf, options) {
     }
   }
   htmlPlugins.push(new HtmlWebpackHarddiskPlugin())
-  const entry = getEntry(conf)
   for (const key in entry) {
     const entryItem = entry[key]
     entryItem.unshift(require.resolve('webpack/hot/dev-server'))

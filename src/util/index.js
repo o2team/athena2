@@ -200,3 +200,15 @@ exports.formatTime = function (date) {
   const minute = date.getMinutes()
   return `${year}-${exports.zeroPad(month, 2)}-${exports.zeroPad(day, 2)} ${exports.zeroPad(hour, 2)}:${exports.zeroPad(minute, 2)}`
 }
+
+exports.isEmptyObject = function (obj) {
+  if (obj == null) {
+    return true
+  }
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      return false
+    }
+  }
+  return true
+}

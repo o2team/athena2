@@ -79,9 +79,11 @@ exports.getEntry = function ({ appConf, appPath, moduleList = [], buildConfig = 
         if (!fs.existsSync(entryPath)) {
           entryPath = path.join(pagePath, item, `index.js`)
         }
-        entry[`${mod}/${item}`] = [
-          entryPath
-        ]
+        if (fs.existsSync(entryPath)) {
+          entry[`${mod}/${item}`] = [
+            entryPath
+          ]
+        }
       }
     })
   })
@@ -109,20 +111,22 @@ exports.getPageHtml = function ({ appConf, appPath, moduleList = [], buildConfig
           filename = `index.html`
           pageHtmlPath = path.join(pagePath, item, filename)
         }
-        let title = ''
-        try {
-          const htmlContents = String(fs.readFileSync(pageHtmlPath))
-          const matchs = htmlContents.match(/<title[^>]*>([^<]+)<\/title>/)
-          if (matchs) {
-            title = matchs[1]
+        if (fs.existsSync(pageHtmlPath)) {
+          let title = ''
+          try {
+            const htmlContents = String(fs.readFileSync(pageHtmlPath))
+            const matchs = htmlContents.match(/<title[^>]*>([^<]+)<\/title>/)
+            if (matchs) {
+              title = matchs[1]
+            }
+          } catch (e) {
+            title = ''
           }
-        } catch (e) {
-          title = ''
-        }
-        pageHtml[mod][item] = {
-          filepath: pageHtmlPath,
-          filename,
-          title
+          pageHtml[mod][item] = {
+            filepath: pageHtmlPath,
+            filename,
+            title
+          }
         }
       }
     })
