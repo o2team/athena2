@@ -17,6 +17,8 @@ exports.DEFAULT_PUBLIC_PATH = '/'
 exports.DEFAULT_STATIC_DIRECTORY = 'static'
 exports.DEFAULT_CHUNK_DIRECTORY = 'chunk'
 
+const IGNORE_FILE_REG = /(^|\/)\.[^\/\.]/g
+
 exports.getConf = function () {
   const rootPath = process.cwd()
   let appConf = null
@@ -71,7 +73,7 @@ exports.getEntry = function ({ appConf, appPath, moduleList = [], buildConfig = 
   const sourceRoot = buildConfig.sourceRoot
   moduleList.forEach(mod => {
     const pagePath = path.join(appPath, sourceRoot, mod, 'page')
-    const pageDirInfo = fs.readdirSync(pagePath)
+    const pageDirInfo = fs.readdirSync(pagePath).filter(item => !IGNORE_FILE_REG.test(item))
     pageDirInfo.forEach(item => {
       const ext = path.extname(item)
       if (!ext.length) {
@@ -98,7 +100,7 @@ exports.getPageHtml = function ({ appConf, appPath, moduleList = [], buildConfig
   const sourceRoot = buildConfig.sourceRoot
   moduleList.forEach(mod => {
     const pagePath = path.join(appPath, sourceRoot, mod, 'page')
-    const pageDirInfo = fs.readdirSync(pagePath)
+    const pageDirInfo = fs.readdirSync(pagePath).filter(item => !IGNORE_FILE_REG.test(item))
     if (!pageHtml[mod]) {
       pageHtml[mod] = {}
     }
