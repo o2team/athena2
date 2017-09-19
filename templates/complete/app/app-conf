@@ -5,6 +5,7 @@ module.exports = {
   createTime: '<%= date %>',
   template: '<%= template %>',
   platform: '<%= platform %>',
+  framework: '<%= framework %>',
   common: 'common',
   moduleList: ['common']
 }

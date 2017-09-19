@@ -40,6 +40,7 @@ module.exports = function create (creater, params, helper, cb) {
     appId,
     platform,
     description,
+    framework,
     template,
     date
   })
