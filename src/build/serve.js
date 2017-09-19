@@ -64,9 +64,10 @@ function serveCore (conf, options) {
   const port = buildConfig.port || DEFAULT_PORT
   const urls = prepareUrls(protocol, host, port)
   const { template, framework, platform } = appConf
+  const customWebpackConf = buildConfig.webpack
   const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackDevConf = require('../config/dev.conf')(conf.appPath, buildConfig, template, platform, framework)
-  const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf)
+  const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf, customWebpackConf)
   const htmlPages = getPageHtml(conf)
   const htmlPlugins = [
     new HtmlWebpackPlugin({
