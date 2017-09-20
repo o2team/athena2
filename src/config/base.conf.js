@@ -3,7 +3,7 @@ const webpack = require('webpack')
 
 const Util = require('../util')
 
-const autoprefixerConf = require('./autoprefixer.conf')
+const browserList = require('./browser_list')
 
 module.exports = function (appPath, buildConfig, template, platform, framework) {
   const { env = {}, defineConstants = {} } = buildConfig
@@ -23,7 +23,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
                     presets: [
                       [require('babel-preset-env'), {
                         targets: {
-                          browsers: autoprefixerConf[platform],
+                          browsers: browserList[platform],
                           uglify: true,
                           loose: false,
                           useBuiltIns: true

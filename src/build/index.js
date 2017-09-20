@@ -2,20 +2,13 @@ const path = require('path')
 const url = require('url')
 const fs = require('fs-extra')
 const chalk = require('chalk')
+const _ = require('lodash')
 
 const { getLocalIp, isPrivate } = require('../util')
 
 exports.BUILD_MODULE = 'module'
 exports.BUILD_APP = 'app'
 exports.BUILD_NONE = 'none'
-
-exports.DEFAULT_PROTOCOL = 'http'
-exports.DEFAULT_HOST = '0.0.0.0'
-exports.DEFAULT_PORT = 3000
-exports.DEFAULT_BUILD_ROOT = 'dist'
-exports.DEFAULT_PUBLIC_PATH = '/'
-exports.DEFAULT_STATIC_DIRECTORY = 'static'
-exports.DEFAULT_CHUNK_DIRECTORY = 'chunk'
 
 const IGNORE_FILE_REG = /(^|\/)\.[^\/\.]/g
 
@@ -62,7 +55,9 @@ exports.getConf = function () {
 }
 
 exports.getAppBuildConfig = function (appPath) {
-  return require(path.join(appPath, 'config'))
+  const buildConfig = require(path.join(appPath, 'config'))(_.merge)
+  const defaultConfig = require('../config/build.conf')
+  return _.merge(defaultConfig, buildConfig)
 }
 
 exports.getEntry = function ({ appConf, appPath, moduleList = [], buildConfig = {} }) {

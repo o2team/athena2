@@ -18,13 +18,6 @@ const {
   getPageHtml,
   createCompiler,
   prepareUrls,
-  DEFAULT_PROTOCOL,
-  DEFAULT_HOST,
-  DEFAULT_PORT,
-  DEFAULT_BUILD_ROOT,
-  DEFAULT_STATIC_DIRECTORY,
-  DEFAULT_PUBLIC_PATH,
-  DEFAULT_CHUNK_DIRECTORY,
   BUILD_APP,
   BUILD_MODULE,
   BUILD_NONE
@@ -51,7 +44,15 @@ function serveCore (conf, options) {
   const serveSpinner = ora(`Starting development server, please wait🤡~`).start()
   const appConf = conf.appConf
   const buildConfig = getAppBuildConfig(conf.appPath)
-  buildConfig.staticDirectory = buildConfig.staticDirectory || DEFAULT_STATIC_DIRECTORY
+  const {
+    protocol,
+    host,
+    port,
+    publicPath,
+    outputRoot,
+    chunkDirectory,
+    staticDirectory
+  } = buildConfig
   conf.buildConfig = buildConfig
   const entry = getEntry(conf)
   if (isEmptyObject(entry)) {
@@ -59,9 +60,6 @@ function serveCore (conf, options) {
     console.log(chalk.bold('GoodBye!'))
     process.exit(1)
   }
-  const protocol = buildConfig.protocol || DEFAULT_PROTOCOL
-  const host = buildConfig.host || DEFAULT_HOST
-  const port = buildConfig.port || DEFAULT_PORT
   const urls = prepareUrls(protocol, host, port)
   const { template, framework, platform } = appConf
   const customWebpackConf = buildConfig.webpack
@@ -98,13 +96,12 @@ function serveCore (conf, options) {
     entryItem.unshift(require.resolve('webpack-dev-server/client') + '?/')
   }
   webpackConf.entry = entry
-  const publicPath = buildConfig.publicPath || DEFAULT_PUBLIC_PATH
-  const contentBase = path.join(conf.appPath, buildConfig.buildRoot || DEFAULT_BUILD_ROOT)
+  const contentBase = path.join(conf.appPath, outputRoot)
   webpackConf.output = {
     path: contentBase,
     filename: '[name].js',
     publicPath,
-    chunkFilename: `${buildConfig.chunkDirectory || DEFAULT_CHUNK_DIRECTORY}/[name].chunk.js`
+    chunkFilename: `${chunkDirectory}/[name].chunk.js`
   }
   webpackConf.plugins = webpackConf.plugins.concat(htmlPlugins)
   const compiler = createCompiler(webpack, webpackConf)

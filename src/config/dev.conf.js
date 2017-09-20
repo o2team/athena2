@@ -1,9 +1,8 @@
 const path = require('path')
 const webpack = require('webpack')
-const autoprefixer = require('autoprefixer')
 const NpmInstallPlugin = require('npm-install-webpack-plugin')
 
-const autoprefixerConf = require('./autoprefixer.conf')
+const { getPostcssPlugins } = require('./postcss.conf')
 
 const { shouldUseCnpm } = require('../util')
 
@@ -58,13 +57,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
                   loader: require.resolve('postcss-loader'),
                   options: {
                     ident: 'postcss',
-                    plugins: () => [
-                      require('postcss-flexbugs-fixes'),
-                      autoprefixer({
-                        browsers: autoprefixerConf[platform],
-                        flexbox: 'no-2009'
-                      })
-                    ]
+                    plugins: () => getPostcssPlugins(buildConfig)
                   }
                 },
                 require.resolve('sass-loader')
