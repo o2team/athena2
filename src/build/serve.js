@@ -124,8 +124,8 @@ function serveCore (conf, options) {
   let isFirstCompile = true
   compiler.plugin('invalid', filepath => {
     console.log(chalk.grey(`[${formatTime()}]Modified: ${filepath}`))
-    serveSpinner.render()
     serveSpinner.text = 'Compiling...🤡~'
+    serveSpinner.render()
   })
   compiler.plugin('done', stats => {
     const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))

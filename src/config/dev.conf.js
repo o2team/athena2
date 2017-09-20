@@ -1,8 +1,11 @@
 const path = require('path')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
+const NpmInstallPlugin = require('npm-install-webpack-plugin')
 
 const autoprefixerConf = require('./autoprefixer.conf')
+
+const { shouldUseCnpm } = require('../util')
 
 module.exports = function (appPath, buildConfig, template, platform, framework) {
   const { staticDirectory } = buildConfig
@@ -79,6 +82,12 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       ]
     },
     plugins: [
+      new NpmInstallPlugin({
+        dev: false,
+        peerDependencies: true,
+        quiet: false,
+        npm: shouldUseCnpm() ? 'cnpm' : 'npm'
+      }),
       new webpack.LoaderOptionsPlugin({
         htmlLoader: {
           attrs: ['img:src', 'link:href', 'data-src']
