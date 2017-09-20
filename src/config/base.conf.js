@@ -32,7 +32,8 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
                     ],
                     plugins: [
                       require('babel-plugin-transform-class-properties'),
-                      require('babel-plugin-transform-object-rest-spread')
+                      require('babel-plugin-transform-object-rest-spread'),
+                      require('babel-plugin-syntax-dynamic-import')
                     ].concat(
                       platform === 'pc' ? [
                         require('babel-plugin-transform-es3-member-expression-literals'),
