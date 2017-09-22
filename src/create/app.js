@@ -117,10 +117,10 @@ class App extends CreateBase {
     }
 
     const templateChoices = [{
-      name: 'Complete(Complex project should use this template)',
+      name: 'Complete(Complex project like multi-page application should use this template)',
       value: 'complete'
     }, {
-      name: 'Simple(Simple template for simple project)',
+      name: 'Simple(Simple template like single-page application for simple project)',
       value: 'simple'
     }]
 

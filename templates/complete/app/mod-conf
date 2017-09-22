@@ -1,0 +1,8 @@
+module.exports = {
+  module: '<%= moduleName %>',
+  moduleId: '<%= moduleId %>',
+  createTime: '<%= date %>',
+  app: '<%= appName %>',
+  common: '<%= common %>',
+  description: 'common module'
+}
