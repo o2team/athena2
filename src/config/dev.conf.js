@@ -24,7 +24,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               loader: require.resolve('url-loader'),
               options: {
                 limit: 10000,
-                name: path.join(staticDirectory, 'images/[name].[ext]')
+                name: `${staticDirectory}/images/[name].[ext]`
               }
             },
             {
@@ -32,7 +32,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               loader: require.resolve('url-loader'),
               options: {
                 limit: 10000,
-                name: path.join(staticDirectory, 'media/[name].[ext]')
+                name: `${staticDirectory}/media/[name].[ext]`
               }
             },
             {
@@ -40,7 +40,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               loader: require.resolve('url-loader'),
               options: {
                 limit: 10000,
-                name: path.join(staticDirectory, 'fonts/[name].[ext]')
+                name: `${staticDirectory}/fonts/[name].[ext]`
               }
             },
             {
@@ -67,7 +67,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               exclude: /\.js|\.html|\.json|\.ejs$/,
               loader: require.resolve('url-loader'),
               options: {
-                name: path.join(staticDirectory, 'ext/[name].[ext]')
+                name: `${staticDirectory}/ext/[name].[ext]`
               }
             }
           ]
