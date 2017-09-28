@@ -14,6 +14,7 @@ program
   .command('module [name]', 'Create a module').alias('m')
   .command('page [name]', 'Create a page').alias('pa')
   .command('component [name]', 'Create a component').alias('c')
+  .command('sass', 'Use sass')
   .command('serve [modNames]', 'Development preview').alias('s')
   .command('build [modNames]', 'Build for production').alias('b')
   .parse(process.argv)
