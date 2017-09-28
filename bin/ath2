@@ -11,5 +11,6 @@ program
   .usage('<command> [options]')
   .command('init [url]', 'Init Athena')
   .command('app [appName]', 'Create an app').alias('a')
-  .command('serve [name]', 'Development preview').alias('s')
+  .command('serve [modNames]', 'Development preview').alias('s')
+  .command('build [modNames]', 'Build for production').alias('b')
   .parse(process.argv)
