@@ -4,5 +4,5 @@ module.exports = {
   createTime: '<%= date %>',
   app: '<%= appName %>',
   common: '<%= common %>',
-  description: 'common module'
+  description: '<%= description %>'
 }

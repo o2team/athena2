@@ -1,3 +1,4 @@
+var _ = require('lodash')
 const path = require('path')
 const fs = require('fs-extra')
 const memFs = require('mem-fs')
@@ -15,6 +16,8 @@ class CreateBase {
     const store = memFs.create()
     this.fs = editor.create(store)
     this.username = getConfig().username
+    this._ = _
+
     if (!this.username) {
       this.username = getSystemUsername()
       setConfig({ username: this.username })
@@ -71,7 +74,7 @@ class CreateBase {
     this.fs.copyTpl(
       this.templatePath(template, type, source),
       this.destinationPath(dest),
-      data || this,
+      _.assign(this, data),
       options
     )
     return this

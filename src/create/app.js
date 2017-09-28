@@ -19,12 +19,13 @@ class App extends CreateBase {
       description: '',
       framework: null,
       template: null,
-      platform: null
+      platform: null,
+      sass: false
     }, options)
   }
 
   init () {
-    console.log(chalk.green(`Allo ${chalk.green.bold(this.username)}! Prepare to create app!`))
+    console.log(chalk.green(`Allo ${chalk.green.bold(this.username)}! Prepare to create a new app!`))
     console.log('Need help? Go and open issue: https://github.com/o2team/athena2/issues/new')
     console.log()
   }
@@ -62,7 +63,7 @@ class App extends CreateBase {
       prompts.push({
         type: 'input',
         name: 'appName',
-        message: 'Already existing the app name, choose another name please!',
+        message: 'Already existing the app, choose another name please!',
         validate (input) {
           if (!input) {
             return 'App name can not be empty!'
@@ -183,6 +184,14 @@ class App extends CreateBase {
         })
         process.exit(1)
       }
+    }
+
+    if (!conf.sass) {
+      prompts.push({
+        type: 'confirm',
+        name: 'sass',
+        message: 'Do you wanna use sass?',
+      })
     }
 
     return inquirer.prompt(prompts)

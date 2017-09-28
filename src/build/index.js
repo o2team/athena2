@@ -31,13 +31,12 @@ exports.getConf = function () {
     modulePath = rootPath
     moduleConfPath = path.join(modulePath, 'mod.conf.js')
   }
-
   if (appConfPath && fs.existsSync(appConfPath)) {
     appConf = require(appConfPath)
     buildType = exports.BUILD_APP
   } else if (moduleConfPath && fs.existsSync(moduleConfPath)) {
     moduleConf = require(moduleConfPath)
-    appPath = path.resolve(modulePath, '..')
+    appPath = path.resolve(modulePath, '../..')
     appConfPath = path.join(appPath, 'app.conf.js')
     appConf = require(appConfPath)
     buildType = exports.BUILD_MODULE

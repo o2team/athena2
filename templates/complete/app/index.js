@@ -6,7 +6,7 @@ const ora = require('ora')
 const uuid = require('uuid')
 
 module.exports = function create (creater, params, helper, cb) {
-  const { appName, appId, description, framework, template, date, platform } = params
+  const { appName, appId, description, framework, template, date, platform, sass } = params
   const commonDir = 'common'
   const sourceRootDir = 'src'
   const configDir = 'config'
@@ -24,11 +24,12 @@ module.exports = function create (creater, params, helper, cb) {
   creater.template(template, 'app', path.join(configDir, 'index'), path.join(configDirPath, 'index.js'))
   creater.template(template, 'app', path.join(configDir, 'dev'), path.join(configDirPath, 'dev.js'))
   creater.template(template, 'app', path.join(configDir, 'prod'), path.join(configDirPath, 'prod.js'))
-  creater.template(template, 'app', 'mod-conf', path.join(sourceRootPath, commonDir, 'mod.conf.js'), {
+  creater.template(template, 'module', 'mod-conf', path.join(sourceRootPath, commonDir, 'mod.conf.js'), {
     moduleName: commonDir,
     moduleId: uuid.v1(),
     date,
     appName,
+    description: 'common module',
     common: commonDir
   })
   creater.template(template, 'app', 'editorconfig', path.join(appName, '.editorconfig'))
@@ -41,7 +42,8 @@ module.exports = function create (creater, params, helper, cb) {
   creater.template(template, 'app', 'packagejson', path.join(appName, 'package.json'), {
     appName,
     framework,
-    date
+    date,
+    sass
   })
   creater.template(template, 'app', 'app-conf', path.join(appName, 'app.conf.js'), {
     appName,
