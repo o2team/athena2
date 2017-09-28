@@ -20,6 +20,10 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               loader: require.resolve('html-loader')
             },
             {
+              test: /\.vue$/,
+              loader: require.resolve('vue-loader')
+            },
+            {
               test: /\.(png|jpe?g|gif|bpm|svg)(\?.*)?$/,
               loader: require.resolve('url-loader'),
               options: {
