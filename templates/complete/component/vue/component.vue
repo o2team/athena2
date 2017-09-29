@@ -15,5 +15,5 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped<% if (sass) { %> lang="sass"<% } %>>
 </style>

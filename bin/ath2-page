@@ -35,13 +35,15 @@ program
   const appName = appConf.app
   const template = appConf.template
   const framework = appConf.framework
+  const sass = appConf.sass
 
   const page = new Page({
     appName,
     template,
     framework,
     pageName,
-    description
+    description,
+    sass
   })
 
   page.create()

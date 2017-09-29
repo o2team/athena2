@@ -35,13 +35,15 @@ program
   const appName = appConf.app
   const template = appConf.template
   const framework = appConf.framework
+  const sass = appConf.sass
 
   const component = new Component({
     appName,
     template,
     framework,
     componentName,
-    description
+    description,
+    sass
   })
 
   component.create()

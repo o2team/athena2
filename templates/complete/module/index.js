@@ -19,18 +19,18 @@ module.exports = function create (creater, params, helper, cb) {
   let moduleList = appConf.moduleList
 
   if (moduleList.indexOf(moduleName) < 0) {
-    for (var i = 0; i < appConfStrLines.length; i++) {
-      var line = appConfStrLines[i];
+    for (let i = 0; i < appConfStrLines.length; i++) {
+      let line = appConfStrLines[i];
       if (line.indexOf('moduleList') >= 0) {
         appConfStrLines[i] = line.split(']')[0];
         if (moduleList.length > 0) {
-          appConfStrLines[i] += ', \'' + moduleName + '\'],';
+          appConfStrLines[i] += `,'${moduleName}'],`
         } else {
-          appConfStrLines[i] += '\'' + moduleName + '\'],';
+          appConfStrLines[i] += `'${moduleName}'],`
         }
       }
     }
-    fs.writeFileSync(creater.appConfPath, appConfStrLines.join('\n'));
+    fs.writeFileSync(creater.appConfPath, appConfStrLines.join('\n'))
   }
 
   fs.mkdirpSync(path.join(sourceRootDir, moduleName))

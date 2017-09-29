@@ -7,5 +7,6 @@ module.exports = {
   platform: '<%= platform %>',
   framework: '<%= framework %>',
   common: 'common',
-  moduleList: ['common']
+  moduleList: ['common'],
+  sass: '<%= sass %>'
 }
