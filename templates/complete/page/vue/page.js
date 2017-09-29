@@ -5,7 +5,7 @@
  */
 
 import Vue from 'vue'
-import View from './<%= pageName %>'
+import View from './<%= pageName %>.vue'
 
 new Vue({
   render: h => h(View)
