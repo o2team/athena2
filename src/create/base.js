@@ -16,6 +16,7 @@ class CreateBase {
     const store = memFs.create()
     this.fs = editor.create(store)
     this.username = getConfig().username
+    this.appConfPath = this.destinationPath('app.conf.js');
     this._ = _
 
     if (!this.username) {

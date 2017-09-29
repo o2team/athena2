@@ -12,6 +12,26 @@ module.exports = function create (creater, params, helper, cb) {
   const pageDir = 'page'
   const componentDir = 'component'
   const commonDir =  'common'
+  const appConf = require(creater.appConfPath)
+  const appConfFile = fs.readFileSync(creater.appConfPath)
+  const appConfStr = String(appConfFile)
+  let appConfStrLines = appConfStr.split('\n')
+  let moduleList = appConf.moduleList
+
+  if (moduleList.indexOf(moduleName) < 0) {
+    for (var i = 0; i < appConfStrLines.length; i++) {
+      var line = appConfStrLines[i];
+      if (line.indexOf('moduleList') >= 0) {
+        appConfStrLines[i] = line.split(']')[0];
+        if (moduleList.length > 0) {
+          appConfStrLines[i] += ', \'' + moduleName + '\'],';
+        } else {
+          appConfStrLines[i] += '\'' + moduleName + '\'],';
+        }
+      }
+    }
+    fs.writeFileSync(creater.appConfPath, appConfStrLines.join('\n'));
+  }
 
   fs.mkdirpSync(path.join(sourceRootDir, moduleName))
   fs.mkdirpSync(path.join(sourceRootDir, moduleName, pageDir))

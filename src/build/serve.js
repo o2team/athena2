@@ -147,6 +147,7 @@ function serveCore (conf, options) {
 }
 
 function serveApp (conf, options) {
+  console.log(conf.moduleList)
   conf.moduleList = conf.args
   delete conf.args
   if (!conf.moduleList || !conf.moduleList.length) {
