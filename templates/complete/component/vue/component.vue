@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: '<%= componentName >',
+  name: '<%= componentName %>',
   data () {
     return {
 

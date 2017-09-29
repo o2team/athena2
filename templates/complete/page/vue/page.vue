@@ -20,6 +20,6 @@ export default {
 }
 </script>
 
-<style <%= if (sass) { lang="sass" } %>>
+<style <% if (sass) { lang="sass" } %>>
 
 </style>

@@ -15,15 +15,17 @@ module.exports = function create (creater, params, helper, cb) {
   fs.mkdirpSync(path.join(componentDir, componentName))
 
   // copy files
-  creater.template(template, `component/${framework}`, 'component.js', path.join(componentDir, componentName, `${componentName}.js`), {
-    date,
-    description,
-    componentName
-  })
   if (framework !== 'vue') {
     creater.template(template, 'component', 'component.css', path.join(componentDir, componentName, componentCss))
+    creater.template(template, `component/${framework}`, 'component.js', path.join(componentDir, componentName, `${componentName}.js`), {
+      date,
+      description,
+      componentName
+    })
   } else {
-    creater.template(template, 'component/vue', 'component.vue', path.join(componentDir, componentName, `${componentName}.vue`))
+    creater.template(template, 'component/vue', 'component.vue', path.join(componentDir, componentName, `${componentName}.vue`), {
+      componentName
+    })
   }
 
   creater.fs.commit(() => {

@@ -26,7 +26,10 @@ module.exports = function create (creater, params, helper, cb) {
   if (framework !== 'vue') {
     creater.template(template, 'page', 'page.css', path.join(pageDir, pageName, pageCss))
   } else {
-    creater.template(template, 'page/vue', 'page.vue', path.join(pageDir, pageName, `${pageName}.vue`))
+    creater.template(template, 'page/vue', 'page.vue', path.join(pageDir, pageName, `${pageName}.vue`), {
+      pageName,
+      sass
+    })
   }
 
   creater.fs.commit(() => {
