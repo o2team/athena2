@@ -3,7 +3,8 @@
  * @date <%= date %>
  * @desc <%= description %>
  */
-import React from 'reactjs'
+import React from 'react'
+import ReactDom from 'react-dom'
 
 class <%= _.upperFirst(_.camelCase(pageName)) %> extends React.Component {
   constructor () {
@@ -19,4 +20,4 @@ class <%= _.upperFirst(_.camelCase(pageName)) %> extends React.Component {
   }
 }
 
-Nerv.render(<<%= _.upperFirst(_.camelCase(pageName)) %> />, document.getElementById('J_container'))
+ReactDom.render(<<%= _.upperFirst(_.camelCase(pageName)) %> />, document.getElementById('J_container'))

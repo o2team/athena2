@@ -1,4 +1,4 @@
-const path = require('path')
+// const path = require('path')
 const webpack = require('webpack')
 const NpmInstallPlugin = require('npm-install-webpack-plugin')
 

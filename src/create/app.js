@@ -161,28 +161,38 @@ class App extends CreateBase {
       value: 'vue'
     }]
 
-    if (typeof conf.framework !== 'string') {
+    if (conf.template === 'simple') {
       prompts.push({
-        type: 'list',
-        name: 'framework',
-        message: 'Please choose your favorite framework',
-        choices: frameworkChoices
+        type: 'confirm',
+        name: 'h5',
+        message: 'Do you wanna create a h5 project?'
       })
     } else {
-      let isFrameworkExist = false
-      frameworkChoices.forEach(item => {
-        if (item.value === conf.framework) {
-          isFrameworkExist = true
+      if (!conf.h5) {
+        if (typeof conf.framework !== 'string') {
+          prompts.push({
+            type: 'list',
+            name: 'framework',
+            message: 'Please choose your favorite framework',
+            choices: frameworkChoices
+          })
+        } else {
+          let isFrameworkExist = false
+          frameworkChoices.forEach(item => {
+            if (item.value === conf.framework) {
+              isFrameworkExist = true
+            }
+          })
+          if (!isFrameworkExist) {
+            console.log(chalk.red('The framework you choose is not exist!'))
+            console.log(chalk.red('Currently there are the following frameworks to choose from:'))
+            console.log()
+            frameworkChoices.forEach(item => {
+              console.log(chalk.green(`- ${item.name}`))
+            })
+            process.exit(1)
+          }
         }
-      })
-      if (!isFrameworkExist) {
-        console.log(chalk.red('The framework you choose is not exist!'))
-        console.log(chalk.red('Currently there are the following frameworks to choose from:'))
-        console.log()
-        frameworkChoices.forEach(item => {
-          console.log(chalk.green(`- ${item.name}`))
-        })
-        process.exit(1)
       }
     }
 
@@ -190,7 +200,7 @@ class App extends CreateBase {
       prompts.push({
         type: 'confirm',
         name: 'sass',
-        message: 'Do you wanna use sass?',
+        message: 'Do you wanna use sass?'
       })
     }
 

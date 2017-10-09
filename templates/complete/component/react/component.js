@@ -4,7 +4,8 @@
  * @desc <%= description %>
  */
 
-import React from 'reactjs'
+import React from 'react'
+import ReactDom from 'react-dom'
 
 class <%= _.upperFirst(_.camelCase(componentName)) %> extends React.Component {
   constructor () {

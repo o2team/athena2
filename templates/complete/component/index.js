@@ -24,7 +24,8 @@ module.exports = function create (creater, params, helper, cb) {
     })
   } else {
     creater.template(template, 'component/vue', 'component.vue', path.join(componentDir, componentName, `${componentName}.vue`), {
-      componentName
+      componentName,
+      sass
     })
   }
 

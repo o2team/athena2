@@ -1,7 +1,10 @@
 const path = require('path')
 const chalk = require('chalk')
 const webpack = require('webpack')
-const WebpackDevServer = require('webpack-dev-server')
+// const WebpackDevServer = require('webpack-dev-server')
+const WebpackDevMiddleware = require('webpack-dev-middleware')
+const WebpackHotMiddleware = require('webpack-hot-middleware')
+const express = require('express')
 const webpackMerge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
@@ -10,6 +13,8 @@ const ora = require('ora')
 const { getRootPath, isEmptyObject, formatTime } = require('../util')
 const open = require('../util/open')
 const formatWebpackMessage = require('../util/format_webpack_message')
+
+const app = express()
 
 const {
   getConf,
@@ -50,8 +55,8 @@ function serveCore (conf, options) {
     port,
     publicPath,
     outputRoot,
-    chunkDirectory,
-    staticDirectory
+    chunkDirectory
+    // staticDirectory
   } = buildConfig
   conf.buildConfig = buildConfig
   const entry = getEntry(conf)
@@ -66,6 +71,7 @@ function serveCore (conf, options) {
   const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackDevConf = require('../config/dev.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf, customWebpackConf)
+  const HotMiddleWareConfig = `webpack-hot-middleware/client`
   const htmlPages = getPageHtml(conf)
   const htmlPlugins = [
     new HtmlWebpackPlugin({
@@ -92,9 +98,10 @@ function serveCore (conf, options) {
   htmlPlugins.push(new HtmlWebpackHarddiskPlugin())
   for (const key in entry) {
     const entryItem = entry[key]
-    entryItem.unshift(require.resolve('webpack/hot/dev-server'))
-    entryItem.unshift(require.resolve('webpack-dev-server/client') + '?/')
+    entryItem.unshift('react-hot-loader/patch')
+    entryItem.unshift(HotMiddleWareConfig)
   }
+
   webpackConf.entry = entry
   const contentBase = path.join(conf.appPath, outputRoot)
   webpackConf.output = {
@@ -105,19 +112,34 @@ function serveCore (conf, options) {
   }
   webpackConf.plugins = webpackConf.plugins.concat(htmlPlugins)
   const compiler = createCompiler(webpack, webpackConf)
+  // console.log(webpackConf)
   const webpackDevServerConf = require('../config/devServer.conf')({
     publicPath,
     contentBase,
     protocol,
     host,
-    publicUrl: urls.lanUrlForConfig
+    publicUrl: urls.lanUrlForConfig,
+    quiet: true,
+    hot: true
   })
-  const devServer = new WebpackDevServer(compiler, webpackDevServerConf)
-  devServer.listen(port, host, err => {
+  const webpackDev = WebpackDevMiddleware(compiler, webpackDevServerConf)
+  const webpackHot = WebpackHotMiddleware(compiler, {
+    log: false,
+    path: '/__webpack_hmr',
+    heartbeat: 10 * 1000
+  })
+  app.use(webpackDev)
+  app.use(webpackHot)
+  app.listen(port, host, err => {
     if (err) {
       return console.log(err)
     }
   })
+  // devServer.listen(port, host, err => {
+  //   if (err) {
+  //     return console.log(err)
+  //   }
+  // })
   let isFirstCompile = true
   compiler.plugin('invalid', filepath => {
     console.log(chalk.grey(`[${formatTime()}]Modified: ${filepath}`))
@@ -147,7 +169,6 @@ function serveCore (conf, options) {
 }
 
 function serveApp (conf, options) {
-  console.log(conf.moduleList)
   conf.moduleList = conf.args
   delete conf.args
   if (!conf.moduleList || !conf.moduleList.length) {
