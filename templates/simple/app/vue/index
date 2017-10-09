@@ -5,8 +5,8 @@
  */
 
 import Vue from 'vue'
-import View from './<%= pageName %>.vue'
+import App from './app.vue'
 
 new Vue({
-  render: h => h(View)
+  render: h => h(App)
 }).$mount('#J_container')

@@ -42,8 +42,7 @@ module.exports = function create (creater, params, helper, cb) {
   creater.template(template, 'app', 'packagejson', path.join(appName, 'package.json'), {
     appName,
     framework,
-    date,
-    sass
+    date
   })
   creater.template(template, 'app', 'app-conf', path.join(appName, 'app.conf.js'), {
     appName,
@@ -52,7 +51,8 @@ module.exports = function create (creater, params, helper, cb) {
     description,
     framework,
     template,
-    date
+    date,
+    sass
   })
   creater.fs.commit(() => {
     console.log()

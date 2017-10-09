@@ -6,7 +6,5 @@ module.exports = {
   template: '<%= template %>',
   platform: '<%= platform %>',
   framework: '<%= framework %>',
-  common: 'common',
-  moduleList: ['common'],
   sass: '<%= sass %>'
 }

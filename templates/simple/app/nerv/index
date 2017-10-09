@@ -1,0 +1,23 @@
+/**
+ * @author <%= username %>
+ * @date <%= date %>
+ * @desc <%= description %>
+ */
+ 
+import Nerv from 'nervjs'
+
+class App extends React.Component {
+  constructor () {
+    super(...arguments)
+    this.state = {}
+  }
+
+  render () {
+    return (
+      <div className='app'>
+      </div>
+    )
+  }
+}
+
+Nerv.render(<App />, document.getElementById('J_container'))

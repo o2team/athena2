@@ -7,31 +7,30 @@ const uuid = require('uuid')
 
 module.exports = function create (creater, params, helper, cb) {
   const { appName, appId, description, framework, template, date, platform, sass } = params
-  const commonDir = 'common'
   const sourceRootDir = 'src'
   const configDir = 'config'
   const configDirPath = path.join(appName, configDir)
   const sourceRootPath = path.join(appName, sourceRootDir)
+  const globalCss = sass ? 'global.scss' : 'global.css'
   // create app dir
   fs.mkdirpSync(appName)
   fs.mkdirpSync(sourceRootPath)
   fs.mkdirpSync(configDirPath)
-  fs.mkdirpSync(path.join(sourceRootPath, commonDir))
-  fs.mkdirpSync(path.join(sourceRootPath, commonDir, 'page'))
-  fs.mkdirpSync(path.join(sourceRootPath, commonDir, 'component'))
 
   // copy files
+  creater.template(template, 'app', 'indexhtml', path.join(sourceRootPath, 'index.html'), { appName })
+  creater.template(template, `app/${framework}`, 'index', path.join(sourceRootPath, 'index.js'), {
+    description,
+    date
+  })
+  if (framework === 'vue') {
+    creater.template(template, 'app/vue', 'app', path.join(sourceRootPath, 'app.vue'), { sass })
+  } else {
+    creater.template(template, 'app', 'globalcss', path.join(sourceRootPath, globalCss))
+  }
   creater.template(template, 'app', path.join(configDir, 'index'), path.join(configDirPath, 'index.js'))
   creater.template(template, 'app', path.join(configDir, 'dev'), path.join(configDirPath, 'dev.js'))
   creater.template(template, 'app', path.join(configDir, 'prod'), path.join(configDirPath, 'prod.js'))
-  creater.template(template, 'module', 'mod-conf', path.join(sourceRootPath, commonDir, 'mod.conf.js'), {
-    moduleName: commonDir,
-    moduleId: uuid.v1(),
-    date,
-    appName,
-    description: 'common module',
-    common: commonDir
-  })
   creater.template(template, 'app', 'editorconfig', path.join(appName, '.editorconfig'))
   creater.template(template, 'app', 'gitignore', path.join(appName, '.gitignore'))
   creater.template(template, 'app', 'eslintconfig', path.join(appName, '.eslintrc.js'), {
@@ -42,8 +41,7 @@ module.exports = function create (creater, params, helper, cb) {
   creater.template(template, 'app', 'packagejson', path.join(appName, 'package.json'), {
     appName,
     framework,
-    date,
-    sass
+    date
   })
   creater.template(template, 'app', 'app-conf', path.join(appName, 'app.conf.js'), {
     appName,
@@ -52,24 +50,29 @@ module.exports = function create (creater, params, helper, cb) {
     description,
     framework,
     template,
-    date
+    date,
+    sass
   })
+
   creater.fs.commit(() => {
     console.log()
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created app: ${chalk.grey.bold(appName)}`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${configDir}`)}`)
-    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${commonDir}`)}`)
-    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${commonDir}/page`)}`)
-    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${commonDir}/component`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/${configDir}/index.js`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/${configDir}/dev.js`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/${configDir}/prod.js`)}`)
-    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/${commonDir}/mod.conf.js`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.editorconfig`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.gitignore`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.eslintrc.js`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/package.json`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/app.conf.js`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/index.html`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/index.js`)}`)
+    if (framework === 'vue') {
+      console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/app.vue`)}`)
+    } else {
+      console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/${globalCss}`)}`)
+    }
     console.log()
     const gitInitSpinner = ora(`cd ${chalk.cyan.bold(appName)}, executing ${chalk.cyan.bold('git init')}`).start()
     process.chdir(appName)

@@ -24,13 +24,21 @@ program
   const appConf = conf.appConf
   const moduleConf = conf.moduleConf
 
-  if (!appConf && !moduleConf) {
-    console.log(chalk.red(`Is not a Athena App module, please check if the file mod.conf actually exists!😢`))
-    return
-  } else if (appConf && !moduleConf) {
-    console.log(chalk.red(`Current dir is an app, please go to the module dir!😢`))
-    return
+  if (appConf.template === 'complete') {
+    if (!appConf && !moduleConf) {
+      console.log(chalk.red(`Is not a Athena App module, please check if the file mod.conf actually exists!😢`))
+      return
+    } else if (appConf && !moduleConf) {
+      console.log(chalk.red(`Current dir is an app, please go to the module dir!😢`))
+      return
+    }
+  } else {
+    if (!appConf) {
+      console.log(chalk.red(`Is not a Simple Athena App, please check if the file app.conf actually exists!😢`))
+      return
+    }
   }
+
 
   const appName = appConf.app
   const template = appConf.template
