@@ -17,9 +17,6 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               exclude: /node_modules/,
               use: [
                 {
-                  loader: 'hot-module-accept'
-                },
-                {
                   loader: 'babel-loader',
                   options: {
                     cacheDirectory: true,
@@ -54,7 +51,10 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
                       ] : []
                     )
                   }
-                }
+                },
+                framework === 'react' ? {
+                  loader: 'hot-module-accept'
+                } : {}
               ]
             }
           ]

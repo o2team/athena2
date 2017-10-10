@@ -71,7 +71,7 @@ function serveCore (conf, options) {
   const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackDevConf = require('../config/dev.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf, customWebpackConf)
-  const HotMiddleWareConfig = `webpack-hot-middleware/client`
+  const HotMiddleWareConfig = framework !== 'nerv' ? 'webpack-hot-middleware/client' : 'webpack-hot-middleware/client?reload=true'
   const htmlPages = getPageHtml(conf)
   const htmlPlugins = [
     new HtmlWebpackPlugin({
@@ -98,7 +98,6 @@ function serveCore (conf, options) {
   htmlPlugins.push(new HtmlWebpackHarddiskPlugin())
   for (const key in entry) {
     const entryItem = entry[key]
-    entryItem.unshift('react-hot-loader/patch')
     entryItem.unshift(HotMiddleWareConfig)
   }
 
