@@ -142,7 +142,7 @@ function serveCore (conf, options) {
     const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
     const isSuccess = !errors.length && !warnings.length
     if (isSuccess) {
-      serveSpinner.succeed(chalk.green('Compile success!\n'))
+      serveSpinner.succeed(chalk.green('Compile successfully!\n'))
     }
     if (errors.length) {
       errors.splice(1)
