@@ -1,7 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
 
-const { getPostcssPlugins } = require('./postcss.conf')
 const Util = require('../util')
 const browserList = require('./browser_list')
 
@@ -92,30 +91,6 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
                 limit: 10000,
                 name: `${staticDirectory}/fonts/[name].[ext]`
               }
-            },
-            {
-              test: /\.(css|scss|sass)(\?.*)?$/,
-              use: [
-                {
-                  loader: require.resolve('style-loader')
-                },
-                {
-                  loader: require.resolve('css-loader'),
-                  options: {
-                    importLoaders: 1
-                  }
-                },
-                {
-                  loader: require.resolve('postcss-loader'),
-                  options: {
-                    ident: 'postcss',
-                    plugins: () => getPostcssPlugins(buildConfig)
-                  }
-                },
-                {
-                  loader: require.resolve('sass-loader')
-                }
-              ]
             },
             {
               exclude: /\.js|\.html|\.json|\.ejs$/,
