@@ -15,8 +15,8 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
             {
               test: /\.(css|scss|sass)(\?.*)?$/,
               loader: ExtractTextPlugin.extract({
+                fallback: require.resolve('style-loader'),
                 use: [
-                  require.resolve('style-loader'),
                   {
                     loader: require.resolve('css-loader'),
                     options: {
