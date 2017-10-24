@@ -93,7 +93,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               }
             },
             {
-              exclude: /\.js|\.html|\.json|\.ejs$/,
+              exclude: /\.js|\.css|\.scss|\.sass|\.html|\.json|\.ejs$/,
               loader: require.resolve('url-loader'),
               options: {
                 name: `${staticDirectory}/ext/[name].[ext]`

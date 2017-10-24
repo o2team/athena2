@@ -1,4 +1,3 @@
-// const path = require('path')
 const webpack = require('webpack')
 const NpmInstallPlugin = require('npm-install-webpack-plugin')
 
@@ -15,9 +14,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
             {
               test: /\.(css|scss|sass)(\?.*)?$/,
               use: [
-                {
-                  loader: require.resolve('style-loader')
-                },
+                require.resolve('style-loader'),
                 {
                   loader: require.resolve('css-loader'),
                   options: {
@@ -31,9 +28,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
                     plugins: () => getPostcssPlugins(buildConfig)
                   }
                 },
-                {
-                  loader: require.resolve('sass-loader')
-                }
+                require.resolve('sass-loader')
               ]
             }
           ]
@@ -46,11 +41,6 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
         peerDependencies: true,
         quiet: false,
         npm: shouldUseCnpm() ? 'cnpm' : 'npm'
-      }),
-      new webpack.LoaderOptionsPlugin({
-        htmlLoader: {
-          attrs: ['img:src', 'link:href', 'data-src']
-        }
       }),
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NoEmitOnErrorsPlugin()
