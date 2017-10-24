@@ -1,3 +1,4 @@
+const fs = require('fs-extra')
 const path = require('path')
 const chalk = require('chalk')
 const webpack = require('webpack')
@@ -90,6 +91,8 @@ function buildCore (conf, options) {
     chunkFilename: `${chunkDirectory}/[name].chunk.js`
   }
   webpackConf.plugins = webpackConf.plugins.concat(htmlPlugins)
+  // delete last output
+  fs.emptyDirSync(outputRoot)
   const compiler = createCompiler(webpack, webpackConf)
   compiler.run((err, stats) => {
     if (err) {
