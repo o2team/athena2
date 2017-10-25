@@ -1,7 +1,6 @@
 const path = require('path')
 const chalk = require('chalk')
 const webpack = require('webpack')
-// const WebpackDevServer = require('webpack-dev-server')
 const WebpackDevMiddleware = require('webpack-dev-middleware')
 const WebpackHotMiddleware = require('webpack-hot-middleware')
 const express = require('express')
@@ -134,11 +133,6 @@ function serveCore (conf, options) {
       return console.log(err)
     }
   })
-  // devServer.listen(port, host, err => {
-  //   if (err) {
-  //     return console.log(err)
-  //   }
-  // })
   let isFirstCompile = true
   compiler.plugin('invalid', filepath => {
     console.log(chalk.grey(`[${formatTime()}]Modified: ${filepath}`))
