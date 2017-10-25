@@ -110,7 +110,6 @@ function serveCore (conf, options) {
   }
   webpackConf.plugins = webpackConf.plugins.concat(htmlPlugins)
   const compiler = createCompiler(webpack, webpackConf)
-  // console.log(webpackConf)
   const webpackDevServerConf = require('../config/devServer.conf')({
     publicPath,
     contentBase,
@@ -143,7 +142,7 @@ function serveCore (conf, options) {
     const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
     const isSuccess = !errors.length && !warnings.length
     if (isSuccess) {
-      serveSpinner.succeed(chalk.green('Compile success!\n'))
+      serveSpinner.succeed(chalk.green('Compile successfully!\n'))
     }
     if (errors.length) {
       errors.splice(1)
