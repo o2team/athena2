@@ -6,7 +6,7 @@ const webpackMerge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ora = require('ora')
 
-const { getRootPath, isEmptyObject } = require('../util')
+const { getRootPath, isEmptyObject, urlJoin } = require('../util')
 const formatWebpackMessage = require('../util/format_webpack_message')
 
 const {
@@ -45,9 +45,11 @@ function buildCore (conf, options) {
     publicPath,
     outputRoot,
     chunkDirectory
-    // staticDirectory
   } = buildConfig
   conf.buildConfig = buildConfig
+  conf.moduleList.forEach(item => {
+    fs.removeSync(path.join(outputRoot, item))
+  })
   const entry = getEntry(conf)
   if (isEmptyObject(entry)) {
     buildSpinner.fail(chalk.red(`No file to build, please check if the ${chalk.bold('page')} directories are empty!`))
@@ -58,59 +60,80 @@ function buildCore (conf, options) {
   const customWebpackConf = buildConfig.webpack
   const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackProdConf = require('../config/prod.conf')(conf.appPath, buildConfig, template, platform, framework)
-  const webpackConf = webpackMerge(webpackBaseConf, webpackProdConf, customWebpackConf)
-  const htmlPages = getPageHtml(conf)
-  const htmlPlugins = [
-    new HtmlWebpackPlugin({
-      title: conf.appConf.app,
-      filename: 'index.html',
-      template: path.join(getRootPath(), 'src', 'config', 'sitemap_template.ejs'),
-      alwaysWriteToDisk: true,
-      data: {
-        htmlPages
-      }
-    })
-  ]
-  for (const mod in htmlPages) {
-    for (const page in htmlPages[mod]) {
-      const pageItem = htmlPages[mod][page]
-      htmlPlugins.push(new HtmlWebpackPlugin({
-        filename: `${mod}/${pageItem.filename}`,
-        template: pageItem.filepath,
-        alwaysWriteToDisk: true,
-        chunks: [`${mod}/${page}`]
-      }))
+  let dllWebpackCompiler
+  let libContext
+  const library = buildConfig.library
+  let vendorFiles = []
+  let libraryDir
+  if (conf.buildType === BUILD_APP) {
+    if (library && !isEmptyObject(library)) {
+      libraryDir = library.directory || 'lib'
+      libContext = path.join(conf.appPath, outputRoot, libraryDir)
+      fs.ensureDirSync(libContext)
+      const webpackDllConf = require('../config/dll.conf')(libContext, buildConfig, library)
+      dllWebpackCompiler = webpack(webpackDllConf)
     }
   }
+  const webpackConf = webpackMerge(webpackBaseConf, webpackProdConf, customWebpackConf)
+  const htmlPages = getPageHtml(conf)
   webpackConf.entry = entry
-  const contentBase = path.join(conf.appPath, outputRoot)
   webpackConf.output = {
-    path: contentBase,
+    path: path.join(conf.appPath, outputRoot),
     filename: '[name].js',
     publicPath,
     chunkFilename: `${chunkDirectory}/[name].chunk.js`
   }
-  webpackConf.plugins = webpackConf.plugins.concat(htmlPlugins)
-  // delete last output
-  fs.emptyDirSync(outputRoot)
-  const compiler = createCompiler(webpack, webpackConf)
-  compiler.run((err, stats) => {
-    if (err) {
-      return printBuildError(err)
+  webpackConf.plugins.push(new HtmlWebpackPlugin({
+    title: conf.appConf.app,
+    filename: 'index.html',
+    template: path.join(getRootPath(), 'src', 'config', 'sitemap_template.ejs'),
+    alwaysWriteToDisk: true,
+    data: {
+      htmlPages
     }
-    const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
-    const isSuccess = !errors.length && !warnings.length
-    if (isSuccess) {
-      buildSpinner.succeed(chalk.green('Compile successfully!\n'))
-    }
-    if (errors.length) {
-      errors.splice(1)
-      buildSpinner.fail(chalk.red('Compile failed!\n'))
-      return printBuildError(new Error(errors.join('\n\n')))
-    }
-    if (warnings.length) {
+  }))
+  if (dllWebpackCompiler) {
+    dllWebpackCompiler.run((err, stats) => {
+      if (err) {
+        return printBuildError(err)
+      }
+      const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
+      const isSuccess = !errors.length && !warnings.length
+      if (isSuccess) {
+        webpackConf.plugins.push(
+          new webpack.DllReferencePlugin({
+            context: libContext,
+            manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
+          })
+        )
+        vendorFiles = fs.readdirSync(libContext).map(file => {
+          if (/dll\.js$/.test(file)) {
+            return `${publicPath}${urlJoin(libraryDir, file)}`
+          }
+          return null
+        }).filter(Boolean)
+        for (const mod in htmlPages) {
+          for (const page in htmlPages[mod]) {
+            const pageItem = htmlPages[mod][page]
+            webpackConf.plugins.push(new HtmlWebpackPlugin({
+              filename: `${mod}/${pageItem.filename}`,
+              template: pageItem.filepath,
+              alwaysWriteToDisk: true,
+              chunks: [`${mod}/${page}`],
+              vendorFiles
+            }))
+          }
+        }
+        const compiler = createCompiler(webpack, webpackConf)
+        return buildCompilerRun(compiler, buildSpinner)
+      }
+      if (errors.length) {
+        errors.splice(1)
+        buildSpinner.fail(chalk.red('Compile library failed!\n'))
+        return printBuildError(new Error(errors.join('\n\n')))
+      }
       if (warnings.length) {
-        buildSpinner.warn(chalk.yellow('Compiled with warnings.\n'))
+        buildSpinner.warn(chalk.yellow('Library Compiled with warnings.\n'))
         console.log(warnings.join('\n\n'))
         console.log(
           '\nSearch for the ' +
@@ -122,9 +145,69 @@ function buildCore (conf, options) {
             chalk.cyan('// eslint-disable-next-line') +
             ' to the line before.\n'
         )
-      } else {
-        buildSpinner.succeed(chalk.green('Compiled successfully.\n'))
       }
+    })
+  } else {
+    if (library && !isEmptyObject(library)) {
+      webpackConf.plugins.push(
+        new webpack.DllReferencePlugin({
+          context: libContext,
+          manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
+        })
+      )
+    }
+    vendorFiles = fs.readdirSync(libContext).map(file => {
+      if (/dll\.js$/.test(file)) {
+        return `${publicPath}${urlJoin(libraryDir, file)}`
+      }
+      return null
+    }).filter(Boolean)
+    for (const mod in htmlPages) {
+      for (const page in htmlPages[mod]) {
+        const pageItem = htmlPages[mod][page]
+        webpackConf.plugins.push(new HtmlWebpackPlugin({
+          filename: `${mod}/${pageItem.filename}`,
+          template: pageItem.filepath,
+          alwaysWriteToDisk: true,
+          chunks: [`${mod}/${page}`],
+          vendorFiles
+        }))
+      }
+    }
+    const compiler = createCompiler(webpack, webpackConf)
+    buildCompilerRun(compiler, buildSpinner)
+  }
+}
+
+function buildCompilerRun (compiler, buildSpinner) {
+  compiler.run((err, stats) => {
+    if (err) {
+      return printBuildError(err)
+    }
+    const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
+    const isSuccess = !errors.length && !warnings.length
+    if (isSuccess) {
+      buildSpinner.succeed(chalk.green('Compile successfully!\n'))
+      return
+    }
+    if (errors.length) {
+      errors.splice(1)
+      buildSpinner.fail(chalk.red('Compile failed!\n'))
+      return printBuildError(new Error(errors.join('\n\n')))
+    }
+    if (warnings.length) {
+      buildSpinner.warn(chalk.yellow('Compiled with warnings.\n'))
+      console.log(warnings.join('\n\n'))
+      console.log(
+        '\nSearch for the ' +
+          chalk.underline(chalk.yellow('keywords')) +
+          ' to learn more about each warning.'
+      )
+      console.log(
+        'To ignore, add ' +
+          chalk.cyan('// eslint-disable-next-line') +
+          ' to the line before.\n'
+      )
     }
   })
 }
