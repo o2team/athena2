@@ -21,6 +21,6 @@ console.log(chalk.green(`Allo ${chalk.bold(getConfig().username)}! Starting buil
 console.log()
 
 const build = require('../src/build/build')
-process.env.NODE_ENV = 'development'
+process.env.NODE_ENV = 'production'
 
 build(args, { debug })
