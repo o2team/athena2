@@ -24,7 +24,8 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
         plugins: [
           require('babel-plugin-transform-class-properties'),
           require('babel-plugin-transform-object-rest-spread'),
-          require('babel-plugin-syntax-dynamic-import')
+          require('babel-plugin-syntax-dynamic-import'),
+          require('babel-plugin-transform-jscript')
         ].concat(
           platform === 'pc' ? [
             require('babel-plugin-transform-es3-member-expression-literals'),
@@ -72,23 +73,21 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               test: /\.(png|jpe?g|gif|bpm|svg)(\?.*)?$/,
               loader: require.resolve('url-loader'),
               options: {
-                limit: 10000,
+                limit: 2000,
                 name: `${staticDirectory}/images/[name].[ext]`
               }
             },
             {
               test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-              loader: require.resolve('url-loader'),
+              loader: require.resolve('file-loader'),
               options: {
-                limit: 10000,
                 name: `${staticDirectory}/media/[name].[ext]`
               }
             },
             {
               test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-              loader: require.resolve('url-loader'),
+              loader: require.resolve('file-loader'),
               options: {
-                limit: 10000,
                 name: `${staticDirectory}/fonts/[name].[ext]`
               }
             },
