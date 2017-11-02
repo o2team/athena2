@@ -65,24 +65,31 @@ exports.getEntry = function ({ appConf, appPath, moduleList = [], buildConfig = 
   }
   const entry = {}
   const sourceRoot = buildConfig.sourceRoot
-  moduleList.forEach(mod => {
-    const pagePath = path.join(appPath, sourceRoot, mod, 'page')
-    const pageDirInfo = fs.readdirSync(pagePath).filter(item => !IGNORE_FILE_REG.test(item))
-    pageDirInfo.forEach(item => {
-      const ext = path.extname(item)
-      if (!ext.length) {
-        let entryPath = path.join(pagePath, item, `${item}.js`)
-        if (!fs.existsSync(entryPath)) {
-          entryPath = path.join(pagePath, item, `index.js`)
+
+  if (moduleList) {
+    moduleList.forEach(mod => {
+      const pagePath = path.join(appPath, sourceRoot, mod, 'page')
+      const pageDirInfo = fs.readdirSync(pagePath).filter(item => !IGNORE_FILE_REG.test(item))
+      pageDirInfo.forEach(item => {
+        const ext = path.extname(item)
+        if (!ext.length) {
+          let entryPath = path.join(pagePath, item, `${item}.js`)
+          if (!fs.existsSync(entryPath)) {
+            entryPath = path.join(pagePath, item, `index.js`)
+          }
+          if (fs.existsSync(entryPath)) {
+            entry[`${mod}/${item}`] = [
+              entryPath
+            ]
+          }
         }
-        if (fs.existsSync(entryPath)) {
-          entry[`${mod}/${item}`] = [
-            entryPath
-          ]
-        }
-      }
+      })
     })
-  })
+  } else {
+    const simpleEntry = path.join(appPath, sourceRoot, 'index.js')
+    if (fs.existsSync(simpleEntry)) entry['index'] = new Array(simpleEntry)
+  }
+
   return entry
 }
 
@@ -92,42 +99,51 @@ exports.getPageHtml = function ({ appConf, appPath, moduleList = [], buildConfig
   }
   const pageHtml = {}
   const sourceRoot = buildConfig.sourceRoot
-  moduleList.forEach(mod => {
-    const pagePath = path.join(appPath, sourceRoot, mod, 'page')
-    const pageDirInfo = fs.readdirSync(pagePath).filter(item => !IGNORE_FILE_REG.test(item))
-    if (!pageHtml[mod]) {
-      pageHtml[mod] = {}
-    }
-    pageDirInfo.forEach(item => {
-      const ext = path.extname(item)
-      if (!ext.length) {
-        let filename = `${item}.html`
-        let pageHtmlPath = path.join(pagePath, item, filename)
-        if (!fs.existsSync(pageHtmlPath)) {
-          filename = `index.html`
-          pageHtmlPath = path.join(pagePath, item, filename)
-        }
-        if (fs.existsSync(pageHtmlPath)) {
-          let title = ''
-          try {
-            const htmlContents = String(fs.readFileSync(pageHtmlPath))
-            const matchs = htmlContents.match(/<title[^>]*>([^<]+)<\/title>/)
-            if (matchs) {
-              title = matchs[1]
-            }
-          } catch (e) {
-            title = ''
-          }
-          pageHtml[mod][item] = {
-            filepath: pageHtmlPath,
-            filename,
-            title
-          }
-        }
+  if (moduleList) {
+    moduleList.forEach(mod => {
+      const pagePath = path.join(appPath, sourceRoot, mod, 'page')
+      const pageDirInfo = fs.readdirSync(pagePath).filter(item => !IGNORE_FILE_REG.test(item))
+      if (!pageHtml[mod]) {
+        pageHtml[mod] = {}
       }
+      pageDirInfo.forEach(item => {
+        const ext = path.extname(item)
+        if (!ext.length) {
+          let filename = `${item}.html`
+          let pageHtmlPath = path.join(pagePath, item, filename)
+          if (!fs.existsSync(pageHtmlPath)) {
+            filename = `index.html`
+            pageHtmlPath = path.join(pagePath, item, filename)
+          }
+          if (fs.existsSync(pageHtmlPath)) {
+            let title = ''
+            try {
+              const htmlContents = String(fs.readFileSync(pageHtmlPath))
+              const matchs = htmlContents.match(/<title[^>]*>([^<]+)<\/title>/)
+              if (matchs) {
+                title = matchs[1]
+              }
+            } catch (e) {
+              title = ''
+            }
+            pageHtml[mod][item] = {
+              filepath: pageHtmlPath,
+              filename,
+              title
+            }
+          }
+        }
+      })
     })
-  })
+  } else {
+    const simpleHtml = path.join(appPath, sourceRoot, 'index.html')
+    if (fs.existsSync(simpleHtml)) {
+      pageHtml['index'] = simpleHtml
+    }
+  }
+
   return pageHtml
+
 }
 
 exports.createCompiler = function (webpack, config) {
