@@ -44,7 +44,8 @@ module.exports = function serve (args, options) {
   }
 }
 
-function serveCore (conf, options) {
+function serveCore (conf, options, sample) {
+  const isSample = sample || false
   const serveSpinner = ora(`Starting development server, please wait🤡~`).start()
   const appConf = conf.appConf
   const buildConfig = getAppBuildConfig(conf.appPath)
@@ -72,28 +73,38 @@ function serveCore (conf, options) {
   const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf, customWebpackConf)
   const HotMiddleWareConfig = framework !== 'nerv' ? 'webpack-hot-middleware/client' : 'webpack-hot-middleware/client?reload=true'
   const htmlPages = getPageHtml(conf)
-  const htmlPlugins = [
-    new HtmlWebpackPlugin({
-      title: conf.appConf.app,
-      filename: 'index.html',
-      template: path.join(getRootPath(), 'src', 'config', 'sitemap_template.ejs'),
-      alwaysWriteToDisk: true,
-      data: {
-        htmlPages
-      }
-    })
-  ]
-  for (const mod in htmlPages) {
-    for (const page in htmlPages[mod]) {
-      const pageItem = htmlPages[mod][page]
-      htmlPlugins.push(new HtmlWebpackPlugin({
-        filename: `${mod}/${pageItem.filename}`,
-        template: pageItem.filepath,
+  let htmlPlugins
+  if (!isSample) {
+    htmlPlugins = [
+      new HtmlWebpackPlugin({
+        title: conf.appConf.app,
+        filename: 'index.html',
+        template: path.join(getRootPath(), 'src', 'config', 'sitemap_template.ejs'),
         alwaysWriteToDisk: true,
-        chunks: [`${mod}/${page}`]
-      }))
+        data: {
+          htmlPages
+        }
+      })
+    ]
+    for (const mod in htmlPages) {
+      for (const page in htmlPages[mod]) {
+        const pageItem = htmlPages[mod][page]
+        htmlPlugins.push(new HtmlWebpackPlugin({
+          filename: `${mod}/${pageItem.filename}`,
+          template: pageItem.filepath,
+          alwaysWriteToDisk: true,
+          chunks: [`${mod}/${page}`]
+        }))
+      }
     }
+  } else {
+    htmlPlugins = [
+      new HtmlWebpackPlugin({
+        template: htmlPages['index']
+      })
+    ]
   }
+
   htmlPlugins.push(new HtmlWebpackHarddiskPlugin())
   for (const key in entry) {
     const entryItem = entry[key]
@@ -161,13 +172,21 @@ function serveCore (conf, options) {
 }
 
 function serveApp (conf, options) {
-  conf.moduleList = conf.args
-  delete conf.args
-  if (!conf.moduleList || !conf.moduleList.length) {
-    conf.moduleList = conf.appConf.moduleList
+  if (conf.appConf.moduleList) {
+    conf.moduleList = conf.args
+    delete conf.args
+    if (!conf.moduleList || !conf.moduleList.length) {
+      conf.moduleList = conf.appConf.moduleList
+    }
+    console.log(`Current building modules ${chalk.bold(conf.moduleList.join(' '))}!`)
+    serveCore(conf, options)
+  } else {
+    if (conf.args.length) {
+      console.log(`Is a Simple App, please use command ${chalk.bold('ath2 s')}!`)
+      return
+    }
+    serveCore(conf, options, true)
   }
-  console.log(`Current building modules ${chalk.bold(conf.moduleList.join(' '))}!`)
-  serveCore(conf, options)
 }
 
 function serveModule (conf, options) {
