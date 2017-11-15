@@ -106,6 +106,7 @@ function buildCore (conf, options) {
             manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
           })
         )
+        if (libContext)
         vendorFiles = fs.readdirSync(libContext).map(file => {
           if (/dll\.js$/.test(file)) {
             return `${publicPath}${urlJoin(libraryDir, file)}`
@@ -156,6 +157,7 @@ function buildCore (conf, options) {
         })
       )
     }
+    if (libContext)
     vendorFiles = fs.readdirSync(libContext).map(file => {
       if (/dll\.js$/.test(file)) {
         return `${publicPath}${urlJoin(libraryDir, file)}`
@@ -249,6 +251,21 @@ function buildApp (conf, options) {
   }
   console.log(`Current building modules ${chalk.bold(conf.moduleList.join(' '))}!`)
   buildCore(conf, options)
+  // if (conf.appConf.moduleList) {
+  //   conf.moduleList = conf.args
+  //   delete conf.args
+  //   if (!conf.moduleList || !conf.moduleList.length) {
+  //     conf.moduleList = conf.appConf.moduleList
+  //   }
+  //   console.log(`Current building modules ${chalk.bold(conf.moduleList.join(' '))}!`)
+  //   buildCore(conf, options)
+  // } else {
+  //   if (conf.args.length) {
+  //     console.log(`Is a Simple App, please use command ${chalk.bold('ath2 s')}!`)
+  //     return
+  //   }
+  //   buildCore(conf, options)
+  // }
 }
 
 function buildModule (conf, options) {
