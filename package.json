@@ -1,6 +1,6 @@
 {
   "name": "athena2",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A build tool for front end",
   "main": "index.js",
   "scripts": {
