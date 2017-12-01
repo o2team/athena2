@@ -3,10 +3,10 @@
  * @date <%= date %>
  * @desc <%= description %>
  */
- 
+
 import Nerv from 'nervjs'
 
-class App extends React.Component {
+class App extends Nerv.Component {
   constructor () {
     super(...arguments)
     this.state = {}
