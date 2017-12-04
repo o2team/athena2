@@ -4,9 +4,15 @@
   "description": "A build tool for front end",
   "main": "index.js",
   "scripts": {
-    "precommit": "npm run eslint",
+    "precommit": "lint-staged",
     "eslint:fix": "eslint --fix bin src test",
     "eslint": "eslint bin src test"
+  },
+  "lint-staged": {
+    "{bin,src,test}/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "bin": {
     "ath2": "bin/ath2"
@@ -81,6 +87,7 @@
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "husky": "^0.14.3"
+    "husky": "^0.14.3",
+    "lint-staged": "^6.0.0"
   }
 }
