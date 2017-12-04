@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "test": "",
-    "eslint": "eslint ./src/",
-    "eslint:fix": "eslint ./src/ --fix",
+    "lint": "eslint ./src/",
+    "lint:fix": "eslint ./src/ --fix",
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "src/**/*.js": [
+    "*.js": [
       "eslint --fix",
       "git add"
     ]

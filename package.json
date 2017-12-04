@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "precommit": "lint-staged",
-    "eslint:fix": "eslint --fix bin src test",
-    "eslint": "eslint bin src test"
+    "lint:fix": "eslint --fix bin src test",
+    "lint": "eslint bin src test"
   },
   "lint-staged": {
-    "{bin,src,test}/**/*.js": [
+    "*.js": [
       "eslint --fix",
       "git add"
     ]
