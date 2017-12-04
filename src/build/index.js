@@ -10,7 +10,7 @@ exports.BUILD_MODULE = 'module'
 exports.BUILD_APP = 'app'
 exports.BUILD_NONE = 'none'
 
-const IGNORE_FILE_REG = /(^|\/)\.[^\/\.]/g
+const IGNORE_FILE_REG = /(^|\/)\.[^/.]/g
 
 exports.getConf = function () {
   const rootPath = process.cwd()
@@ -143,7 +143,6 @@ exports.getPageHtml = function ({ appConf, appPath, moduleList = [], buildConfig
   }
 
   return pageHtml
-
 }
 
 exports.createCompiler = function (webpack, config) {

@@ -106,13 +106,14 @@ function buildCore (conf, options) {
             manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
           })
         )
-        if (libContext)
-        vendorFiles = fs.readdirSync(libContext).map(file => {
-          if (/dll\.js$/.test(file)) {
-            return `${publicPath}${urlJoin(libraryDir, file)}`
-          }
-          return null
-        }).filter(Boolean)
+        if (libContext) {
+          vendorFiles = fs.readdirSync(libContext).map(file => {
+            if (/dll\.js$/.test(file)) {
+              return `${publicPath}${urlJoin(libraryDir, file)}`
+            }
+            return null
+          }).filter(Boolean)
+        }
         for (const mod in htmlPages) {
           for (const page in htmlPages[mod]) {
             const pageItem = htmlPages[mod][page]
@@ -157,13 +158,14 @@ function buildCore (conf, options) {
         })
       )
     }
-    if (libContext)
-    vendorFiles = fs.readdirSync(libContext).map(file => {
-      if (/dll\.js$/.test(file)) {
-        return `${publicPath}${urlJoin(libraryDir, file)}`
-      }
-      return null
-    }).filter(Boolean)
+    if (libContext) {
+      vendorFiles = fs.readdirSync(libContext).map(file => {
+        if (/dll\.js$/.test(file)) {
+          return `${publicPath}${urlJoin(libraryDir, file)}`
+        }
+        return null
+      }).filter(Boolean)
+    }
     for (const mod in htmlPages) {
       for (const page in htmlPages[mod]) {
         const pageItem = htmlPages[mod][page]

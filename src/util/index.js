@@ -214,12 +214,12 @@ exports.isEmptyObject = function (obj) {
 }
 
 exports.urlJoin = function () {
-  function normalize(str) {
+  function normalize (str) {
     return str
-      .replace(/([\/]+)/g, '/')
+      .replace(/([/]+)/g, '/')
       .replace(/\/\?(?!\?)/g, '?')
-      .replace(/\/\#/g, '#')
-      .replace(/\:\//g, '://')
+      .replace(/\/#/g, '#')
+      .replace(/:\//g, '://')
   }
 
   const joined = [].slice.call(arguments, 0).join('/')
