@@ -47,7 +47,7 @@ function buildCore (conf, options) {
     chunkDirectory
   } = buildConfig
   conf.buildConfig = buildConfig
-  conf.moduleList.forEach(item => {
+  conf.moduleList && conf.moduleList.forEach(item => {
     fs.removeSync(path.join(outputRoot, item))
   })
   const entry = getEntry(conf)
@@ -83,15 +83,21 @@ function buildCore (conf, options) {
     publicPath,
     chunkFilename: `${chunkDirectory}/[name].chunk.js`
   }
-  webpackConf.plugins.push(new HtmlWebpackPlugin({
-    title: conf.appConf.app,
-    filename: 'index.html',
-    template: path.join(getRootPath(), 'src', 'config', 'sitemap_template.ejs'),
-    alwaysWriteToDisk: true,
-    data: {
-      htmlPages
-    }
-  }))
+  if (appConf.template !== 'simple') {
+    webpackConf.plugins.push(new HtmlWebpackPlugin({
+      title: conf.appConf.app,
+      filename: 'index.html',
+      template: path.join(getRootPath(), 'src', 'config', 'sitemap_template.ejs'),
+      alwaysWriteToDisk: true,
+      data: {
+        htmlPages
+      }
+    }))
+  } else {
+    webpackConf.plugins.push(new HtmlWebpackPlugin({
+      template: htmlPages['index']
+    }))
+  }
   if (dllWebpackCompiler) {
     dllWebpackCompiler.run((err, stats) => {
       if (err) {
@@ -113,16 +119,18 @@ function buildCore (conf, options) {
           }
           return null
         }).filter(Boolean)
-        for (const mod in htmlPages) {
-          for (const page in htmlPages[mod]) {
-            const pageItem = htmlPages[mod][page]
-            webpackConf.plugins.push(new HtmlWebpackPlugin({
-              filename: `${mod}/${pageItem.filename}`,
-              template: pageItem.filepath,
-              alwaysWriteToDisk: true,
-              chunks: [`${mod}/${page}`],
-              vendorFiles
-            }))
+        if (appConf.template !== 'simple') {
+          for (const mod in htmlPages) {
+            for (const page in htmlPages[mod]) {
+              const pageItem = htmlPages[mod][page]
+              webpackConf.plugins.push(new HtmlWebpackPlugin({
+                filename: `${mod}/${pageItem.filename}`,
+                template: pageItem.filepath,
+                alwaysWriteToDisk: true,
+                chunks: [`${mod}/${page}`],
+                vendorFiles
+              }))
+            }
           }
         }
         const compiler = createCompiler(webpack, webpackConf)
@@ -164,19 +172,22 @@ function buildCore (conf, options) {
       }
       return null
     }).filter(Boolean)
-    for (const mod in htmlPages) {
-      for (const page in htmlPages[mod]) {
-        const pageItem = htmlPages[mod][page]
-        webpackConf.plugins.push(new HtmlWebpackPlugin({
-          filename: `${mod}/${pageItem.filename}`,
-          template: pageItem.filepath,
-          alwaysWriteToDisk: true,
-          chunks: [`${mod}/${page}`],
-          vendorFiles
-        }))
+    if (appConf.template !== 'simple') {
+      for (const mod in htmlPages) {
+        for (const page in htmlPages[mod]) {
+          const pageItem = htmlPages[mod][page]
+          webpackConf.plugins.push(new HtmlWebpackPlugin({
+            filename: `${mod}/${pageItem.filename}`,
+            template: pageItem.filepath,
+            alwaysWriteToDisk: true,
+            chunks: [`${mod}/${page}`],
+            vendorFiles
+          }))
+        }
       }
     }
     const compiler = createCompiler(webpack, webpackConf)
+
     buildCompilerRun(compiler, buildSpinner)
   }
 }
@@ -244,28 +255,15 @@ function printBuildError (err) {
 }
 
 function buildApp (conf, options) {
-  conf.moduleList = conf.args
-  delete conf.args
-  if (!conf.moduleList || !conf.moduleList.length) {
-    conf.moduleList = conf.appConf.moduleList
+  if (conf.appConf.template !== 'simple') {
+    conf.moduleList = conf.args
+    delete conf.args
+    if (!conf.moduleList || !conf.moduleList.length) {
+      conf.moduleList = conf.appConf.moduleList
+    }
+    console.log(`Current building modules ${chalk.bold(conf.moduleList.join(' '))}!`)
   }
-  console.log(`Current building modules ${chalk.bold(conf.moduleList.join(' '))}!`)
   buildCore(conf, options)
-  // if (conf.appConf.moduleList) {
-  //   conf.moduleList = conf.args
-  //   delete conf.args
-  //   if (!conf.moduleList || !conf.moduleList.length) {
-  //     conf.moduleList = conf.appConf.moduleList
-  //   }
-  //   console.log(`Current building modules ${chalk.bold(conf.moduleList.join(' '))}!`)
-  //   buildCore(conf, options)
-  // } else {
-  //   if (conf.args.length) {
-  //     console.log(`Is a Simple App, please use command ${chalk.bold('ath2 s')}!`)
-  //     return
-  //   }
-  //   buildCore(conf, options)
-  // }
 }
 
 function buildModule (conf, options) {
