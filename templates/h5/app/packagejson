@@ -1,0 +1,14 @@
+{
+  "name": "<%= appName %>",
+  "version": "1.0.0",
+  "description": "<%= description %>",
+  "scripts": {
+    "start": "ath2 s",
+    "build": "ath2 build",
+    "test": "",
+    "eslint": "eslint */component */page"
+  },
+  "dependencies": {
+    "preloader.js": "^1.0.0"
+  }
+}

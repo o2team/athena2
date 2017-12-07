@@ -1,0 +1,176 @@
+/**
+ * Mixins
+ */
+
+/**
+ * 引用图片，自动获取图片的宽高
+ * @param  {string} $name [图片相对于img目录的位置]
+ */
+@mixin image-background($name) {
+  $url: '../img/#{$name}.png';
+  width: width($url);
+  height: height($url);
+  background-image: url($url);
+  background-repeat: no-repeat;
+  background-size: width($url) auto;
+}
+
+/**
+ * 引用图片，自动获取图片的宽高
+ * @param  {string} $url [图片的路径]
+ */
+@mixin bg-wh($url) {
+  width: width($url);
+  height: height($url);
+  background-size: size($url);
+  background-image: url($url);
+  background-repeat: no-repeat;
+}
+
+/**
+ * 引用图片，自动获取图片的 background-size
+ * @param  {string} $url [图片的路径]
+ */
+@mixin bg($url) {
+  background-size: size($url);
+  background-image: url($url);
+  background-repeat: no-repeat;
+}
+
+/**
+ * 文本截断 - text ellipsis
+ * @param  {integer} $num [文本截断的行数]
+ */
+@mixin text-line($num:1) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @if $num == 1 {
+    white-space: nowrap;
+  }
+  @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $num;
+    -webkit-box-orient: vertical;
+  }
+}
+
+/**
+ * 清除浮动
+ */
+@mixin clearfix() {
+  &::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+}
+
+/**
+ * 隐藏滚动条
+ */
+@mixin hide-scrollbar() {
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+/**
+ * 1像素边框
+ * @param  {string} $position [边框位置，取值：top, bottom, left, right, full]
+ * @param  {string} $borderColor [边框颜色]
+ * @param  {number} $raidus [圆角]
+ *
+ * 例子：
+ *   @include border(top, #ddd);
+ *   @include border(full, #ddd, 2px);
+ */
+@mixin border($position: full, $borderColor: #ddd, $radius: 0) {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  background-color: $borderColor;
+
+  @if $position == top {
+    height: 1px;
+    left: 0;
+    right: 0;
+    top: 0;
+
+    @media only screen and (-webkit-min-device-pixel-ratio:2) {
+      & {
+        transform: scaleY(0.5);
+        transform-origin: 50% 0%;
+      }
+    }
+  } @else if $position == bottom {
+    height: 1px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    @media only screen and (-webkit-min-device-pixel-ratio:2) {
+      & {
+        transform: scaleY(0.5);
+        transform-origin: 50% 100%;
+      }
+    }
+  } @else if $position == left {
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    @media only screen and (-webkit-min-device-pixel-ratio:2) {
+      & {
+        transform: scaleX(0.5);
+        transform-origin: 0% 50%;
+      }
+    }
+  } @else if $position == right {
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    right: 0;
+
+    @media only screen and (-webkit-min-device-pixel-ratio:2) {
+      & {
+        transform: scaleX(0.5);
+        transform-origin: 100% 50%;
+      }
+    }
+  } @else if $position == full {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: none;
+    border: 1px solid #ddd;
+    border-color: $borderColor;
+
+    @if $radius != 0 {
+      border-radius: $radius;
+    }
+
+    @media only screen and (-webkit-min-device-pixel-ratio:2) {
+      & {
+        right: -100%;
+        bottom: -100%;
+        transform: scale(0.5);
+        transform-origin: 0% 0%;
+
+        $radiusx2: null;
+        @each $i in $radius {
+          $radiusx2: append($radiusx2, $i * 2);
+        }
+
+        @if $radius != 0 {
+          border-radius: $radiusx2;
+        }
+      }
+    }
+  }
+}

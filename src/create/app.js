@@ -33,11 +33,14 @@ class App extends CreateBase {
   create () {
     this.ask()
       .then(answers => {
-        const date = new Date()
-        this.conf = Object.assign(this.conf, answers)
-        this.conf.appId = uuid.v1()
-        this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`
-        this.write()
+        this.askOther(answers.template)
+          .then(otherAnswers => {
+            const date = new Date()
+            this.conf = Object.assign(this.conf, answers, otherAnswers)
+            this.conf.appId = uuid.v1()
+            this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`
+            this.write()
+          })
       })
   }
 
@@ -123,6 +126,9 @@ class App extends CreateBase {
     }, {
       name: 'Simple(Simple template like single-page application for simple project)',
       value: 'simple'
+    }, {
+      name: 'H5(Like Interactive game OR Operational activities)',
+      value: 'h5'
     }]
 
     if (typeof conf.template !== 'string') {
@@ -161,50 +167,50 @@ class App extends CreateBase {
       value: 'vue'
     }]
 
-    if (conf.template === 'simple') {
-      prompts.push({
-        type: 'confirm',
-        name: 'h5',
-        message: 'Do you wanna create a h5 project?'
-      })
+    return inquirer.prompt(prompts)
+  }
+
+  askOther (template) {
+    const newPrompts = []
+    const conf = this.conf
+    if (template === 'h5') {
+      conf.framework = 'default'
     } else {
-      if (!conf.h5) {
-        if (typeof conf.framework !== 'string') {
-          prompts.push({
-            type: 'list',
-            name: 'framework',
-            message: 'Please choose your favorite framework',
-            choices: frameworkChoices
-          })
-        } else {
-          let isFrameworkExist = false
-          frameworkChoices.forEach(item => {
-            if (item.value === conf.framework) {
-              isFrameworkExist = true
-            }
-          })
-          if (!isFrameworkExist) {
-            console.log(chalk.red('The framework you choose is not exist!'))
-            console.log(chalk.red('Currently there are the following frameworks to choose from:'))
-            console.log()
-            frameworkChoices.forEach(item => {
-              console.log(chalk.green(`- ${item.name}`))
-            })
-            process.exit(1)
+      if (typeof conf.framework !== 'string') {
+        newPrompts.push({
+          type: 'list',
+          name: 'framework',
+          message: 'Please choose your favorite framework',
+          choices: frameworkChoices
+        })
+      } else {
+        let isFrameworkExist = false
+        frameworkChoices.forEach(item => {
+          if (item.value === conf.framework) {
+            isFrameworkExist = true
           }
+        })
+        if (!isFrameworkExist) {
+          console.log(chalk.red('The framework you choose is not exist!'))
+          console.log(chalk.red('Currently there are the following frameworks to choose from:'))
+          console.log()
+          frameworkChoices.forEach(item => {
+            console.log(chalk.green(`- ${item.name}`))
+          })
+          process.exit(1)
         }
+      }
+
+      if (!conf.sass) {
+        newPrompts.push({
+          type: 'confirm',
+          name: 'sass',
+          message: 'Do you wanna use sass?'
+        })
       }
     }
 
-    if (!conf.sass) {
-      prompts.push({
-        type: 'confirm',
-        name: 'sass',
-        message: 'Do you wanna use sass?'
-      })
-    }
-
-    return inquirer.prompt(prompts)
+    return inquirer.prompt(newPrompts)
   }
 
   write () {

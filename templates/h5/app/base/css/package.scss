@@ -1,0 +1,19 @@
+/**
+ * 样式主文件
+ */
+
+/**
+ * 常用的 mixins
+ */
+@import "mixin";
+
+/**
+ * 页面的基础样式，包括样式重置
+ */
+@import "base";
+
+/**
+ * 活动的样式
+ */
+@import "loading";
+@import "main";
