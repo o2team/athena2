@@ -4,6 +4,7 @@
  * @desc <%= description %>
  */
 import React from 'react'
+import '<% if (sass) { %>./<%= pageName %>.scss<% } else { %><%= pageName %>.css<%}%>'
 
 class <%= _.upperFirst(_.camelCase(pageName)) %> extends React.Component {
   constructor () {

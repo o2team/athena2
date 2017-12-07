@@ -19,7 +19,8 @@ module.exports = function create (creater, params, helper, cb) {
     creater.template(template, `component/${framework}`, 'component.js', path.join(componentDir, componentName, `${componentName}.js`), {
       date,
       description,
-      componentName
+      componentName,
+      sass
     })
     creater.template(template, `component`, 'component.css', path.join(componentDir, componentName, componentCss))
   } else {

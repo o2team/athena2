@@ -19,7 +19,8 @@ module.exports = function create (creater, params, helper, cb) {
     creater.template(template, `view/${framework}`, 'view.js', path.join(pageDir, pageName, `${pageName}.js`), {
       date,
       description,
-      pageName
+      pageName,
+      sass
     })
     creater.template(template, `view`, 'view.css', path.join(pageDir, pageName, pageCss))
   } else {
