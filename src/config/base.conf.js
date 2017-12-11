@@ -8,8 +8,10 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
   const { env = {}, defineConstants = {}, staticDirectory } = buildConfig
   let imgName, mediaName, fontName, extName
   if (template === 'h5') {
+    imgName = 'img/[name].[ext]'
     mediaName = fontName = extName = 'plugin/[name].[ext]'
   } else {
+    imgName = `${staticDirectory}/images/[name].[ext]`
     mediaName = `${staticDirectory}/media/[name].[ext]`
     fontName = `${staticDirectory}/fonts/[name].[ext]`
     extName = `${staticDirectory}/ext/[name].[ext]`
@@ -99,6 +101,14 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               loader: require.resolve('file-loader'),
               options: {
                 name: fontName
+              }
+            },
+            {
+              test: /\.(png|jpe?g|gif|bpm|svg)(\?.*)?$/,
+              loader: require.resolve('url-loader'),
+              options: {
+                limit: 2000,
+                name: imgName
               }
             },
             {

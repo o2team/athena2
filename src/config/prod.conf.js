@@ -10,7 +10,7 @@ const { isEmptyObject } = require('../util')
 const { getPostcssPlugins } = require('./postcss.conf')
 
 module.exports = function (appPath, buildConfig, template, platform, framework) {
-  const { sourceMap, output = {}, sourceRoot, outputRoot } = buildConfig
+  const { sourceMap, output = {}, sourceRoot, outputRoot, staticDirectory } = buildConfig
   const outputCSS = output.css || {}
   const cssLoaders = []
   const cssExtractPlugins = []

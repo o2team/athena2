@@ -205,6 +205,10 @@ function buildCompilerRun (compiler, buildSpinner, conf) {
     if (err) {
       return printBuildError(err)
     }
+    // temp
+    stats.toJson({
+      profile: true
+    })
     const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
     const isSuccess = !errors.length && !warnings.length
     if (isSuccess) {

@@ -82,6 +82,7 @@
     "webpack-hot-middleware": "2.19.1",
     "webpack-manifest-plugin": "1.3.2",
     "webpack-merge": "4.1.0",
+    "webpack-stats-plugin": "^0.1.5",
     "zepto": "^1.2.0"
   },
   "devDependencies": {
