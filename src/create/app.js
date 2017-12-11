@@ -174,7 +174,7 @@ class App extends CreateBase {
     const newPrompts = []
     const conf = this.conf
     if (template === 'h5') {
-      conf.framework = 'default'
+      conf.framework = 'base'
     } else {
       if (typeof conf.framework !== 'string') {
         newPrompts.push({

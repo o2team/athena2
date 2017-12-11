@@ -12,6 +12,7 @@ printAthenaVersion()
 
 program
   .option('--debug', 'Debug info')
+  .option('--zip', 'Archive directory')
   .parse(process.argv)
 
 const args = program.args

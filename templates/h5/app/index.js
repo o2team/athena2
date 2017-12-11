@@ -25,13 +25,13 @@ module.exports = function create (creater, params, helper, cb) {
 
   // copy files
   creater.template(template, 'app/base/', 'indexhtml', path.join(sourceRootPath, 'index.html'), { appName })
+  creater.template(template, 'app/base/js', 'index.js', path.join(sourceRootPath, 'index.js'))
   creater.template(template, 'app/base/css', 'base.scss', path.join(cssRootPath, 'base.scss'))
   creater.template(template, 'app/base/css', 'loading.scss', path.join(cssRootPath, 'loading.scss'))
   creater.template(template, 'app/base/css', 'main.scss', path.join(cssRootPath, 'main.scss'))
   creater.template(template, 'app/base/css', 'mixin.scss', path.join(cssRootPath, 'mixin.scss'))
   creater.template(template, 'app/base/css', 'package.scss', path.join(cssRootPath, 'package.scss'))
   creater.template(template, 'app/base/img', 'loading.gif', path.join(imgRootPath, 'loading.gif'))
-  creater.template(template, 'app/base/js', 'main.js', path.join(jsRootPath, 'main.js'))
 
   creater.template(template, 'app', path.join(configDir, 'index'), path.join(configDirPath, 'index.js'))
   creater.template(template, 'app', path.join(configDir, 'dev'), path.join(configDirPath, 'dev.js'))

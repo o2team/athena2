@@ -6,6 +6,14 @@ const browserList = require('./browser_list')
 
 module.exports = function (appPath, buildConfig, template, platform, framework) {
   const { env = {}, defineConstants = {}, staticDirectory } = buildConfig
+  let imgName, mediaName, fontName, extName
+  if (template === 'h5') {
+    mediaName = fontName = extName = 'plugin/[name].[ext]'
+  } else {
+    mediaName = `${staticDirectory}/media/[name].[ext]`
+    fontName = `${staticDirectory}/fonts/[name].[ext]`
+    extName = `${staticDirectory}/ext/[name].[ext]`
+  }
   const jsConfUse = [
     {
       loader: require.resolve('babel-loader'),
@@ -46,7 +54,16 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       }
     }
   ]
-  if (framework === 'react') {
+  const alias = framework === 'nerv'
+    ? {
+      '@APP': appPath,
+      react: 'nervjs',
+      'react-dom': 'nervjs'
+    }
+    : {
+      '@APP': appPath
+    }
+  if (framework === 'react' || template === 'h5') {
     jsConfUse.push({
       loader: require.resolve('hot-module-accept')
     })
@@ -71,32 +88,24 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               loader: require.resolve('vue-loader')
             },
             {
-              test: /\.(png|jpe?g|gif|bpm|svg)(\?.*)?$/,
-              loader: require.resolve('url-loader'),
-              options: {
-                limit: 2000,
-                name: `${staticDirectory}/images/[name].[ext]`
-              }
-            },
-            {
               test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
               loader: require.resolve('file-loader'),
               options: {
-                name: `${staticDirectory}/media/[name].[ext]`
+                name: mediaName
               }
             },
             {
               test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
               loader: require.resolve('file-loader'),
               options: {
-                name: `${staticDirectory}/fonts/[name].[ext]`
+                name: fontName
               }
             },
             {
               exclude: /\.js|\.css|\.scss|\.sass|\.html|\.json|\.ejs$/,
               loader: require.resolve('url-loader'),
               options: {
-                name: `${staticDirectory}/ext/[name].[ext]`
+                name: extName
               }
             }
           ]
@@ -105,9 +114,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     },
     resolve: {
       modules: [path.join(Util.getRootPath(), 'node_modules'), 'node_modules'],
-      alias: {
-        '@APP': appPath
-      }
+      alias: alias
     },
     resolveLoader: {
       modules: [path.join(Util.getRootPath(), 'node_modules'), 'node_modules']

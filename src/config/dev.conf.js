@@ -5,6 +5,7 @@ const { getPostcssPlugins } = require('./postcss.conf')
 const { shouldUseCnpm } = require('../util')
 
 module.exports = function (appPath, buildConfig, template, platform, framework) {
+  let imgName = template === 'h5' ? 'img/[name].[ext]' : `${staticDirectory}/images/[name].[ext]`
   return {
     devtool: 'cheap-module-eval-source-map',
     module: {
@@ -30,6 +31,14 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
                 },
                 require.resolve('sass-loader')
               ]
+            },
+            {
+              test: /\.(png|jpe?g|gif|bpm|svg)(\?.*)?$/,
+              loader: require.resolve('url-loader'),
+              options: {
+                limit: 2000,
+                name: imgName
+              }
             }
           ]
         }

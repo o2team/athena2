@@ -5,6 +5,7 @@ const webpack = require('webpack')
 const webpackMerge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ora = require('ora')
+const archiver = require('archiver')
 
 const { getRootPath, isEmptyObject, urlJoin } = require('../util')
 const formatWebpackMessage = require('../util/format_webpack_message')
@@ -57,7 +58,14 @@ function buildCore (conf, options) {
     process.exit(1)
   }
   const { template, framework, platform } = appConf
-  const customWebpackConf = buildConfig.webpack
+  let customWebpackConf
+  if (template === 'h5') {
+    const h5TemplateConf = require(path.join(getRootPath(), 'templates/h5/app', framework, 'template.conf.js'))(webpack, buildConfig)
+    const h5TemplateWebpackConf = webpackMerge(h5TemplateConf.BASE, h5TemplateConf.PROD)
+    customWebpackConf = webpackMerge(h5TemplateWebpackConf, buildConfig.webpack)
+  } else {
+    customWebpackConf = buildConfig.webpack
+  }
   const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackProdConf = require('../config/prod.conf')(conf.appPath, buildConfig, template, platform, framework)
   let dllWebpackCompiler
@@ -79,11 +87,11 @@ function buildCore (conf, options) {
   webpackConf.entry = entry
   webpackConf.output = {
     path: path.join(conf.appPath, outputRoot),
-    filename: '[name].js',
+    filename: 'js/[name].js',
     publicPath,
     chunkFilename: `${chunkDirectory}/[name].chunk.js`
   }
-  if (appConf.template !== 'simple') {
+  if (appConf.template === 'complete') {
     webpackConf.plugins.push(new HtmlWebpackPlugin({
       title: conf.appConf.app,
       filename: 'index.html',
@@ -119,7 +127,7 @@ function buildCore (conf, options) {
           }
           return null
         }).filter(Boolean)
-        if (appConf.template !== 'simple') {
+        if (appConf.template === 'complete') {
           for (const mod in htmlPages) {
             for (const page in htmlPages[mod]) {
               const pageItem = htmlPages[mod][page]
@@ -134,7 +142,7 @@ function buildCore (conf, options) {
           }
         }
         const compiler = createCompiler(webpack, webpackConf)
-        return buildCompilerRun(compiler, buildSpinner)
+        return buildCompilerRun(compiler, buildSpinner, conf)
       }
       if (errors.length) {
         errors.splice(1)
@@ -172,7 +180,7 @@ function buildCore (conf, options) {
       }
       return null
     }).filter(Boolean)
-    if (appConf.template !== 'simple') {
+    if (appConf.template === 'complete') {
       for (const mod in htmlPages) {
         for (const page in htmlPages[mod]) {
           const pageItem = htmlPages[mod][page]
@@ -188,11 +196,11 @@ function buildCore (conf, options) {
     }
     const compiler = createCompiler(webpack, webpackConf)
 
-    buildCompilerRun(compiler, buildSpinner)
+    buildCompilerRun(compiler, buildSpinner, conf)
   }
 }
 
-function buildCompilerRun (compiler, buildSpinner) {
+function buildCompilerRun (compiler, buildSpinner, conf) {
   compiler.run((err, stats) => {
     if (err) {
       return printBuildError(err)
@@ -201,6 +209,9 @@ function buildCompilerRun (compiler, buildSpinner) {
     const isSuccess = !errors.length && !warnings.length
     if (isSuccess) {
       buildSpinner.succeed(chalk.green('Compile successfully!\n'))
+      if (!!~process.argv.indexOf('--zip')) {
+        buildArchive(conf)
+      }
       return
     }
     if (errors.length) {
@@ -223,6 +234,33 @@ function buildCompilerRun (compiler, buildSpinner) {
       )
     }
   })
+}
+
+function buildArchive (conf) {
+  console.log(chalk.yellow('  Archive begin ...'))
+  console.log('')
+  const archivePath = conf.buildConfig.outputRoot
+  const archiveType = 'zip'
+  const outputPath = path.join(conf.appPath,  `project.${archiveType}`)
+  const output = fs.createWriteStream(outputPath)
+  const archive = archiver(archiveType)
+  output.on('close', function () {
+    console.log(chalk.yellow(`  Archive finished, output: ${(archive.pointer()/1024).toFixed(1)}kb`))
+    console.log('')
+  })
+  archive.on('warning', function (err) {
+    if (err.code === 'ENOENT') {
+      console.log(chalk.red(`  Archive warn:  ${err}`))
+    } else {
+      console.log(chalk.red(`  Archive error:  ${err}`))
+    }
+  })
+  archive.on('error', function (err) {
+    console.log(chalk.red(`  Archive error:  ${err}`))
+  })
+  archive.pipe(output)
+  archive.directory(archivePath, false)
+  archive.finalize()
 }
 
 function printBuildError (err) {
@@ -255,7 +293,7 @@ function printBuildError (err) {
 }
 
 function buildApp (conf, options) {
-  if (conf.appConf.template !== 'simple') {
+  if (conf.appConf.template === 'complete') {
     conf.moduleList = conf.args
     delete conf.args
     if (!conf.moduleList || !conf.moduleList.length) {

@@ -67,11 +67,18 @@ function serveCore (conf, options, sample) {
   }
   const urls = prepareUrls(protocol, host, port)
   const { template, framework, platform } = appConf
-  const customWebpackConf = buildConfig.webpack
+  let customWebpackConf
+  if (template === 'h5') {
+    const h5TemplateConf = require(path.join(getRootPath(), 'templates/h5/app', framework, 'template.conf.js'))(webpack, buildConfig)
+    const h5TemplateWebpackConf = webpackMerge(h5TemplateConf.BASE, h5TemplateConf.DEV)
+    customWebpackConf = webpackMerge(h5TemplateWebpackConf, buildConfig.webpack)
+  } else {
+    customWebpackConf = buildConfig.webpack
+  }
   const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackDevConf = require('../config/dev.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf, customWebpackConf)
-  const HotMiddleWareConfig = framework !== 'nerv' ? 'webpack-hot-middleware/client' : 'webpack-hot-middleware/client?reload=true'
+  const HotMiddleWareConfig = framework !== 'nerv' ? 'webpack-hot-middleware/client?quiet=true' : 'webpack-hot-middleware/client?reload=true'
   const htmlPages = getPageHtml(conf)
   let htmlPlugins
   if (!isSample) {
@@ -127,8 +134,6 @@ function serveCore (conf, options, sample) {
     protocol,
     host,
     publicUrl: urls.lanUrlForConfig,
-    quiet: true,
-    hot: true
   })
   const webpackDev = WebpackDevMiddleware(compiler, webpackDevServerConf)
   const webpackHot = WebpackHotMiddleware(compiler, {
