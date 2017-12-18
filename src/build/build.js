@@ -60,7 +60,7 @@ function buildCore (conf, options) {
   const { template, framework, platform } = appConf
   let customWebpackConf
   if (template === 'h5') {
-    const h5TemplateConf = require(path.join(getRootPath(), 'templates/h5/app', framework, 'template.conf.js'))(webpack, buildConfig)
+    const h5TemplateConf = require('../config/h5_template.conf')(webpack, buildConfig)
     const h5TemplateWebpackConf = webpackMerge(h5TemplateConf.BASE, h5TemplateConf.PROD)
     customWebpackConf = webpackMerge(h5TemplateWebpackConf, buildConfig.webpack)
   } else {

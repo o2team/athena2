@@ -27,7 +27,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
                   loader: require.resolve('postcss-loader'),
                   options: {
                     ident: 'postcss',
-                    plugins: () => getPostcssPlugins(buildConfig)
+                    plugins: () => getPostcssPlugins(buildConfig, platform, template)
                   }
                 },
                 require.resolve('sass-loader')

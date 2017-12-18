@@ -12,6 +12,8 @@ module.exports = function create (creater, params, helper, cb) {
   const pageDir = 'page'
   const componentDir = 'component'
   const commonDir =  'common'
+  const staticDir = 'static'
+  const imgDir = 'images'
   const appConf = require(creater.appConfPath)
   const appConfFile = fs.readFileSync(creater.appConfPath)
   const appConfStr = String(appConfFile)
@@ -35,7 +37,9 @@ module.exports = function create (creater, params, helper, cb) {
 
   fs.mkdirpSync(path.join(sourceRootDir, moduleName))
   fs.mkdirpSync(path.join(sourceRootDir, moduleName, pageDir))
+  fs.mkdirpSync(path.join(sourceRootDir, moduleName, staticDir))
   fs.mkdirpSync(path.join(sourceRootDir, moduleName, componentDir))
+  fs.mkdirpSync(path.join(sourceRootDir, moduleName, staticDir, imgDir))
 
   // copy files
   creater.template(template, 'module', 'mod-conf', path.join(sourceRootDir, moduleName, 'mod.conf.js'), {
@@ -52,6 +56,8 @@ module.exports = function create (creater, params, helper, cb) {
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created module: ${chalk.grey.bold(moduleName)}`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${sourceRootDir}/${moduleName}/${pageDir}`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${sourceRootDir}/${moduleName}/${componentDir}`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${sourceRootDir}/${moduleName}/${staticDir}`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${appName}/${sourceRootDir}/${moduleName}/${staticDir}/${imgDir}`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/${sourceRootDir}/${moduleName}/mod.conf.js`)}`)
     console.log()
     console.log(chalk.green(`Create module ${chalk.green.bold(moduleName)} Successfully!`))

@@ -6,6 +6,8 @@
 import React from 'react'
 import ReactDom from 'react-dom'
 
+import '<% if (sass) { %>./<%= pageName %>.scss<% } else { %><%= pageName %>.css<%}%>'
+
 class <%= _.upperFirst(_.camelCase(pageName)) %> extends React.Component {
   constructor () {
     super(...arguments)

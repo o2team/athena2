@@ -20,4 +20,4 @@ class <%= _.upperFirst(_.camelCase(componentName)) %> extends React.Component {
   }
 }
 
-module.exports = <%= _.upperFirst(_.camelCase(conf.componentName)) %>
+export default <%= _.upperFirst(_.camelCase(conf.componentName)) %>

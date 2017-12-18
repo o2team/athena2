@@ -1,5 +1,5 @@
-require('../index.html')
-require('../css/package.scss')
+require('./index.html')
+require('./css/package.scss')
 
 var Preloader = require('preloader.js')
 

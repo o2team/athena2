@@ -24,10 +24,16 @@ const conf = getConf()
 const appConf = conf.appConf
 const moduleConf = conf.moduleConf
 
+if (appConf && appConf.template === 'simple') {
+  console.log(chalk.red(`Is a Simple App, please use command ${chalk.bold('ath2 pa')} or ${chalk.bold('ath2 c')}`))
+  return
+}
 if (!appConf) {
-  console.log(chalk.red(`Is not a Athena App, please check if the file ${chalk.bold('app.conf')} actually exists!😢`))
+  console.log(chalk.red(`Is not a Athena App, please check if the file ${chalk.bold('app.conf.js')} actually exists!😢`))
+  return
 } else if (appConf && moduleConf) {
   console.log(chalk.red(`Current dir is a module, please go back to the App root dir!😢`))
+  return
 }
 
 const appName = appConf.app

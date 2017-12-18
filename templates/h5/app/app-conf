@@ -5,5 +5,5 @@ module.exports = {
   createTime: '<%= date %>',
   template: '<%= template %>',
   platform: '<%= platform %>',
-  framework: '<%= framework %>'
+  h5Template: '<%= h5 %>'
 }

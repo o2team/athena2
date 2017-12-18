@@ -5,6 +5,8 @@
  */
 import Nerv from 'nervjs'
 
+import '<% if (sass) { %>./<%= pageName %>.scss<% } else { %><%= pageName %>.css<%}%>'
+
 class <%= _.upperFirst(_.camelCase(pageName)) %> extends Nerv.Component {
   constructor () {
     super(...arguments)

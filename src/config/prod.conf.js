@@ -16,14 +16,8 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
   const cssExtractPlugins = []
   const devtool = template === 'h5' ? '' : 'hidden-source-map'
   let imgName = template === 'h5' ? 'img/[name].[ext]' : `${staticDirectory}/images/[name].[ext]`
-  let imgLoaders = [{
-    loader: require.resolve('url-loader'),
-    options: {
-      limit: 2000,
-      name: imgName
-    }
-  }]
-  template === 'h5' && buildConfig.module.imageMin.enable && imgLoaders.push({
+  let imgLoaders = []
+  buildConfig.module.imageMin && buildConfig.module.imageMin.enable && imgLoaders.push({
     loader: 'image-webpack-loader',
     options: _.merge({
       mozjpeg: {
@@ -51,6 +45,14 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     }, buildConfig.module.imageMin)
   })
 
+  // imgLoaders.push({
+  //   loader: 'url-loader',
+  //   options: {
+  //     limit: 2000,
+  //     name: imgName
+  //   }
+  // })
+
   if (outputCSS && !isEmptyObject(outputCSS)) {
     for (const key in outputCSS) {
       const extractFile = new ExtractTextPlugin(key)
@@ -73,7 +75,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               loader: require.resolve('postcss-loader'),
               options: {
                 ident: 'postcss',
-                plugins: () => getPostcssPlugins(buildConfig)
+                plugins: () => getPostcssPlugins(buildConfig, platform, template)
               }
             },
             require.resolve('sass-loader')
@@ -96,7 +98,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
           loader: require.resolve('postcss-loader'),
           options: {
             ident: 'postcss',
-            plugins: () => getPostcssPlugins(buildConfig)
+            plugins: () => getPostcssPlugins(buildConfig, platform, template)
           }
         },
         require.resolve('sass-loader')
@@ -120,7 +122,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
             loader: require.resolve('postcss-loader'),
             options: {
               ident: 'postcss',
-              plugins: () => getPostcssPlugins(buildConfig)
+              plugins: () => getPostcssPlugins(buildConfig, platform, template)
             }
           },
           require.resolve('sass-loader')

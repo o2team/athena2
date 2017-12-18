@@ -6,7 +6,7 @@ const ora = require('ora')
 const uuid = require('uuid')
 
 module.exports = function create (creater, params, helper, cb) {
-  const { appName, appId, description, framework, template, date, platform, sass } = params
+  const { appName, appId, description, framework, template, date, platform, sass, pageName } = params
   const sourceRootDir = 'src'
   const configDir = 'config'
   const configDirPath = path.join(appName, configDir)

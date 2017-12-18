@@ -20,4 +20,4 @@ class <%= _.upperFirst(_.camelCase(pageName)) %> extends Nerv.Component {
   }
 }
 
-module.exports = <%= _.upperFirst(_.camelCase(conf.pageName)) %>
+export default <%= _.upperFirst(_.camelCase(conf.pageName)) %>

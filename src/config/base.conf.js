@@ -65,7 +65,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     : {
       '@APP': appPath
     }
-  if (framework === 'react' || template === 'h5') {
+  if (framework !== 'nerv') {
     jsConfUse.push({
       loader: require.resolve('hot-module-accept')
     })

@@ -20,7 +20,8 @@ module.exports = function create (creater, params, helper, cb) {
     creater.template(template, `component/${framework}`, 'component.js', path.join(componentDir, componentName, `${componentName}.js`), {
       date,
       description,
-      componentName
+      componentName,
+      sass
     })
   } else {
     creater.template(template, 'component/vue', 'component.vue', path.join(componentDir, componentName, `${componentName}.vue`), {

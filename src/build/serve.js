@@ -1,9 +1,7 @@
 const path = require('path')
 const chalk = require('chalk')
 const webpack = require('webpack')
-const WebpackDevMiddleware = require('webpack-dev-middleware')
-const WebpackHotMiddleware = require('webpack-hot-middleware')
-const express = require('express')
+const WebpackDevServer = require('webpack-dev-server');
 const webpackMerge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
@@ -12,8 +10,6 @@ const ora = require('ora')
 const { getRootPath, isEmptyObject, formatTime } = require('../util')
 const open = require('../util/open')
 const formatWebpackMessage = require('../util/format_webpack_message')
-
-const app = express()
 
 const {
   getConf,
@@ -69,7 +65,7 @@ function serveCore (conf, options, sample) {
   const { template, framework, platform } = appConf
   let customWebpackConf
   if (template === 'h5') {
-    const h5TemplateConf = require(path.join(getRootPath(), 'templates/h5/app', framework, 'template.conf.js'))(webpack, buildConfig)
+    const h5TemplateConf = require('../config/h5_template.conf')(webpack, buildConfig)
     const h5TemplateWebpackConf = webpackMerge(h5TemplateConf.BASE, h5TemplateConf.DEV)
     customWebpackConf = webpackMerge(h5TemplateWebpackConf, buildConfig.webpack)
   } else {
@@ -78,7 +74,6 @@ function serveCore (conf, options, sample) {
   const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackDevConf = require('../config/dev.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf, customWebpackConf)
-  const HotMiddleWareConfig = framework !== 'nerv' ? 'webpack-hot-middleware/client?quiet=true' : 'webpack-hot-middleware/client?reload=true'
   const htmlPages = getPageHtml(conf)
   let htmlPlugins
   if (!isSample) {
@@ -115,7 +110,8 @@ function serveCore (conf, options, sample) {
   htmlPlugins.push(new HtmlWebpackHarddiskPlugin())
   for (const key in entry) {
     const entryItem = entry[key]
-    entryItem.unshift(HotMiddleWareConfig)
+    entryItem.unshift(require.resolve('webpack/hot/dev-server'))
+    entryItem.unshift(require.resolve('webpack-dev-server/client') + '?/')
   }
 
   webpackConf.entry = entry
@@ -135,15 +131,8 @@ function serveCore (conf, options, sample) {
     host,
     publicUrl: urls.lanUrlForConfig,
   })
-  const webpackDev = WebpackDevMiddleware(compiler, webpackDevServerConf)
-  const webpackHot = WebpackHotMiddleware(compiler, {
-    log: false,
-    path: '/__webpack_hmr',
-    heartbeat: 10 * 1000
-  })
-  app.use(webpackDev)
-  app.use(webpackHot)
-  app.listen(port, host, err => {
+  const server = new WebpackDevServer(compiler, webpackDevServerConf)
+  server.listen(port, host, err => {
     if (err) {
       return console.log(err)
     }

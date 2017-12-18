@@ -85,7 +85,16 @@ const createFragment = function (buildConfig) {
           clearTimeout(tid);
           tid = setTimeout(refresh, 100)
         }
-        
+        win.addEventListener("resize", function () {
+          dbcRefresh()
+        }, false);
+
+        win.addEventListener("pageshow", function (e) {
+          if (e.persisted) {
+            dbcRefresh();
+          }
+        }, false);
+        refresh();
         if (hasRem) {
           remCalc.refresh = refresh;
           remCalc.rem2px = function (d) {

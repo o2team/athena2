@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const postcss = require('postcss')
 const autoprefixer = require('autoprefixer')
 const pxtorem = require('postcss-plugin-px2rem')
 const assets = require('postcss-assets')
@@ -11,7 +12,7 @@ const NODE_ENV = process.env.NODE_ENV || ''
 
 const plugins = []
 
-exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc') {
+exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', template = 'complete') {
   const useModuleConf = buildConfig.module || {}
   const customPostcssConf = useModuleConf.postcss || {}
   const customPlugins = customPostcssConf.plugins || []
@@ -29,27 +30,12 @@ exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc') {
     }, customPostcssConf.assets)))
   }
 
-  const customAutoprefixerConf = customPostcssConf.autoprefixer || {}
-  if (isEmptyObject(customAutoprefixerConf) || customAutoprefixerConf.enable) {
-    plugins.push(autoprefixer(_.merge({}, defaultAutoprefixerConf, customAutoprefixerConf)))
-  }
-
-  const customPxtoremConf = customPostcssConf.pxtorem || {}
-  if (customPxtoremConf.enable) {
-    let preConf = {}
-    if (buildConfig.designLayoutWidth && buildConfig.baseSize) {
-      preConf = {
-        rootValue: buildConfig.designLayoutWidth / buildConfig.baseSize
-      }
-    }
-    plugins.push(pxtorem(_.merge(preConf, customPxtoremConf)))
-  }
-
   const customSpritesConf = customPostcssConf.sprites || {}
   if (customSpritesConf.enable) {
+    const spritePath = template === 'h5' ? 'src/img/' : 'src/static/images/'
     const preSpritesConf = {
-      stylesheetPath: 'src/css/',
-      spritePath: 'src/img/',
+      // stylesheetPath: 'src/static/css/',
+      spritePath: spritePath,
       retina: true,
       relativeTo: 'rule',
       spritesmith: {
@@ -59,16 +45,67 @@ exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc') {
       verbose: false,
       // 将 img 目录下的子目录作为分组，子目录下的 png 图片会合成雪碧图
       groupBy: function (image) {
-        var reg = /img\/(\S+)\/\S+\.png$/.exec(image.url)
-        var groupName = reg ? reg[1] : reg
+        let reg = template === 'h5'
+          ? /img\/(\S+)\/\S+\.png$/.exec(image.url)
+          : /images\/(\S+)\/\S+\.png$/.exec(image.url)
+        let groupName = reg ? reg[1] : reg
+        image.ratio = 1
+        if (groupName) {
+          let ratio = /@(\d+)x$/gi.exec(groupName)
+          if (ratio) {
+            ratio = ratio[1]
+            while (ratio > 10) {
+              ratio = ratio / 10;
+            }
+            image.ratio = ratio;
+          }
+        }
         return groupName ? Promise.resolve(groupName) : Promise.reject()
       },
       // 非 img 子目录下面的 png 不合
       filterBy: function (image) {
-        return /img\/\S+\/\S+\.png$/.test(image.url) ? Promise.resolve() : Promise.reject()
+        // return reg ? Promise.resolve() : Promise.reject()
+        let reg = template === 'h5'
+          ? /img\/(\S+)\/\S+\.png$/.test(image.url)
+          : /images\/(\S+)\/\S+\.png$/.test(image.url)
+        return reg ? Promise.resolve() : Promise.reject()
+      }
+    }
+    const updateRule = require('postcss-sprites/lib/core').updateRule
+    if (buildConfig.enableREM) {
+      preSpritesConf.hooks = {
+        onUpdateRule: function (rule, token, image) {
+          updateRule(rule, token, image)
+
+          rule.insertAfter(rule.last, postcss.decl({
+            prop: 'background-size',
+            value: image.spriteWidth / image.ratio + 'px ' + image.spriteHeight / image.ratio + 'px;'
+          }))
+        }
       }
     }
     plugins.push(sprites(_.merge(preSpritesConf, customSpritesConf)))
+  }
+
+  const customAutoprefixerConf = customPostcssConf.autoprefixer || {}
+  if (isEmptyObject(customAutoprefixerConf) || customAutoprefixerConf.enable) {
+    plugins.push(autoprefixer(_.merge({}, defaultAutoprefixerConf, customAutoprefixerConf)))
+  }
+
+  const customPxtoremConf = customPostcssConf.pxtorem || {}
+  const addPxtoRem = function () {
+    let preConf = {}
+    if (buildConfig.designLayoutWidth && buildConfig.baseSize) {
+      preConf = {
+        rootValue: buildConfig.designLayoutWidth / buildConfig.baseSize
+      }
+    }
+    plugins.push(pxtorem(_.merge(preConf, customPxtoremConf)))
+  }
+  if (template === 'h5') {
+    if (buildConfig.enableREM && customPxtoremConf.enable) addPxtoRem()
+  } else {
+    if (customPxtoremConf.enable) addPxtoRem()
   }
 
   return plugins.concat(customPlugins)

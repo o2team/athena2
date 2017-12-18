@@ -3,7 +3,7 @@
  * @date <%= date %>
  * @desc <%= description %>
  */
- 
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 
@@ -21,4 +21,4 @@ class App extends React.Component {
   }
 }
 
-ReactDom.render(<App />, document.getElementById('J_container'))
+ReactDOM.render(<App />, document.getElementById('J_container'))

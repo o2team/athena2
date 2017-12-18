@@ -80,7 +80,6 @@ class Module extends CreateBase {
 
   write () {
     const { template } = this.conf
-
     const templateCreate = require(path.join(this.templatePath(), template, 'index.js'))
     templateCreate.module(this, this.conf)
   }

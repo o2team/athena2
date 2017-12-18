@@ -14,6 +14,7 @@ const {
 class App extends CreateBase {
   constructor (options) {
     super()
+    this.rootPath = this._rootPath
     this.conf = Object.assign({
       appName: null,
       description: '',
@@ -33,10 +34,12 @@ class App extends CreateBase {
   create () {
     this.ask()
       .then(answers => {
-        this.askOther(answers.template)
+        this.askOther(answers.template || this.conf.template)
           .then(otherAnswers => {
             const date = new Date()
+            const h5 = this.conf.h5
             this.conf = Object.assign(this.conf, answers, otherAnswers)
+            this.conf.h5 = h5
             this.conf.appId = uuid.v1()
             this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`
             this.write()
@@ -95,7 +98,7 @@ class App extends CreateBase {
       value: 'mobile'
     }]
 
-    if (typeof conf.template !== 'string') {
+    if (typeof conf.platform !== 'string') {
       prompts.push({
         type: 'list',
         name: 'platform',
@@ -131,13 +134,15 @@ class App extends CreateBase {
       value: 'h5'
     }]
 
-    if (typeof conf.template !== 'string') {
+    if (typeof conf.template !== 'string' && !conf.h5) {
       prompts.push({
         type: 'list',
         name: 'template',
         message: 'Please choose your favorite template',
         choices: templateChoices
       })
+    } else if (conf.h5) {
+      conf.template = 'h5'
     } else {
       let isTemplateExist = false
       templateChoices.forEach(item => {
@@ -156,6 +161,12 @@ class App extends CreateBase {
       }
     }
 
+    return inquirer.prompt(prompts)
+  }
+
+  askOther (template) {
+    const newPrompts = []
+    const conf = this.conf
     const frameworkChoices = [{
       name: 'Nerv',
       value: 'nerv'
@@ -166,15 +177,21 @@ class App extends CreateBase {
       name: 'Vue',
       value: 'vue'
     }]
-
-    return inquirer.prompt(prompts)
-  }
-
-  askOther (template) {
-    const newPrompts = []
-    const conf = this.conf
     if (template === 'h5') {
       conf.framework = 'base'
+      if (typeof conf.h5 !== 'string') {
+        newPrompts.push({
+          type: 'input',
+          name: 'h5',
+          message: 'Please tell me which h5 template you prepare to use, default to base!',
+          validate (input) {
+            if (!input) {
+              conf.h5 = 'base'
+            }
+            return true
+          }
+        })
+      }
     } else {
       if (typeof conf.framework !== 'string') {
         newPrompts.push({
