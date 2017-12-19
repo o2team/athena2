@@ -8,6 +8,7 @@ const download = require('git-clone')
 
 module.exports = function create (creater, params, helper, cb) {
   // download template
+  params.h5 = params.h5 ? params.h5 : 'base'
   const dirIsExist = fs.existsSync(path.join(creater.rootPath, 'templates/h5/app', params.h5))
   if (dirIsExist) {
     copyFiles(creater, params, helper, cb)
@@ -18,12 +19,11 @@ module.exports = function create (creater, params, helper, cb) {
 
 function downloadTemplate (creater, params, helper, cb) {
   const { h5 } = params
-  const downloadSpinner = ora('Downloading h5 template').start()
   const template = h5
+  const downloadSpinner = ora(`Downloading h5 template ${template}`).start()
   const from = 'git@git.jd.com:o2h5/h5-templates.git'
-  const to = path.join(creater.rootPath, 'templates/h5/app', h5)
-
-  download(from, to, {checkout: h5}, function (err) {
+  const to = path.join(creater.rootPath, 'templates/h5/app', template)
+  download(from, to, {checkout: template}, function (err) {
     downloadSpinner.stop()
     if (err) {
       console.log('')

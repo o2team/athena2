@@ -37,9 +37,7 @@ class App extends CreateBase {
         this.askOther(answers.template || this.conf.template)
           .then(otherAnswers => {
             const date = new Date()
-            const h5 = this.conf.h5
             this.conf = Object.assign(this.conf, answers, otherAnswers)
-            this.conf.h5 = h5
             this.conf.appId = uuid.v1()
             this.conf.date = `${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}`
             this.write()

@@ -25,16 +25,14 @@ exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', templat
   const customPostcssAssets = customPostcssConf.assets || {}
   if (customPostcssAssets.enable) {
     plugins.push(assets(_.merge({
-      loadPaths: ['src/img/'],
       cache: true
     }, customPostcssConf.assets)))
   }
 
   const customSpritesConf = customPostcssConf.sprites || {}
   if (customSpritesConf.enable) {
-    const spritePath = template === 'h5' ? 'src/img/' : 'src/static/images/'
+    const spritePath = template === 'h5' ? 'dist/img/' : 'dist/static/images/'
     const preSpritesConf = {
-      // stylesheetPath: 'src/static/css/',
       spritePath: spritePath,
       retina: true,
       relativeTo: 'rule',
