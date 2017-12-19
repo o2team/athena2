@@ -24,8 +24,12 @@ const conf = getConf()
 const appConf = conf.appConf
 const moduleConf = conf.moduleConf
 
-if (appConf && appConf.template === 'simple') {
-  console.log(chalk.red(`Is a Simple App, please use command ${chalk.bold('ath2 pa')} or ${chalk.bold('ath2 c')}`))
+if (appConf && appConf.template !== 'complete') {
+  if (appConf.template === 'simple') {
+    console.log(chalk.red(`Is a Simple App, please use command ${chalk.bold('ath2 pa')} or ${chalk.bold('ath2 c')}`))
+  } else {
+    console.log(chalk.red(`Is a H5 App, please use command ${chalk.bold('ath2 c')}`))
+  }
   return
 }
 if (!appConf) {

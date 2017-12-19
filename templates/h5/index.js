@@ -1,7 +1,7 @@
 const app = require('./app')
-const appModule = require('./module')
+const component = require('./component')
 
 module.exports = {
   app: app,
-  module: appModule
+  component: component
 }

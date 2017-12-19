@@ -45,13 +45,15 @@ class Component extends CreateBase {
           if (!input) {
             return 'component\'s name can not be empty!'
           }
-          if (fs.existsSync(input)) {
+          if (fs.existsSync(`component/${input}`) || fs.existsSync(`src/component/${input}`) || fs.existsSync(`src/js/${input}.js`)) {
             return 'The component already exist, please give me another name!'
           }
           return true
         }
       })
-    } else if (fs.existsSync(`component/${conf.componentName}`)) {
+    } else if (fs.existsSync(`component/${conf.componentName}`)
+      || fs.existsSync(`src/component/${conf.componentName}`)
+      || fs.existsSync(`src/js/${conf.componentName}.js`)) {
       prompts.push({
         type: 'input',
         name: 'componentName',
@@ -60,7 +62,9 @@ class Component extends CreateBase {
           if (!input) {
             return 'component\'s name can not be empty!'
           }
-          if (fs.existsSync(`component/${input}`)) {
+          if (fs.existsSync(`component/${input}`)
+            || fs.existsSync(`src/component/${input}`)
+            || fs.existsSync(`src/js/${input}.js`)) {
             return 'You type the component name repeatedly!'
           }
           return true

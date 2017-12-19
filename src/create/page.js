@@ -45,13 +45,13 @@ class Page extends CreateBase {
           if (!input) {
             return 'Page\'s name can not be empty!'
           }
-          if (fs.existsSync(input)) {
+          if (fs.existsSync(`page/${input}`) || fs.existsSync(`src/view/${input}`)) {
             return 'The page already exist, please give me another name!'
           }
           return true
         }
       })
-    } else if (fs.existsSync(`page/${conf.pageName}`)) {
+    } else if (fs.existsSync(`page/${conf.pageName}`) || fs.existsSync(`src/view/${conf.pageName}`)) {
       prompts.push({
         type: 'input',
         name: 'pageName',
@@ -60,7 +60,7 @@ class Page extends CreateBase {
           if (!input) {
             return 'Page\'s name can not be empty!'
           }
-          if (fs.existsSync(`page/${input}`)) {
+          if (fs.existsSync(`page/${input}`) || fs.existsSync(`src/view/${input}`)) {
             return 'You type the page name repeatedly!'
           }
           return true

@@ -21,8 +21,7 @@ Athena2
 ### 编译预览
 
 - [x] 轻量组件化功能
-- [x] 页面、组件html编译
-- [x] Sass/less 编译
+- [x] Sass 编译
 - [x] CSS合并压缩
 - [x] CSS prefix，px转rem
 - [x] JS合并压缩
@@ -56,24 +55,7 @@ $ [sudo] npm install -g athena2
 $ [sudo] npm i -g athena2 --registry=http://registry.npm.taobao.org --disturl=http://npm.taobao.org/mirrors/node
 ```
 
-目前已支持**sass/less**文件的编译，使用**sass**需要使用ruby安装**compass**
-
-### *安装Compass
-已安装或项目无需使用sass/less可忽略此步骤。
-```
-$ [sudo] gem install compass
-```
-由于墙的缘故（你懂的），原始的gem源[https://rubygems.org/](https://rubygems.org/) 几乎无法使用，建议将gem源替换成 [ruby-china](http://gems.ruby-china.org) 的源
-
-```
-$ gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/
-$ gem sources -l
-*** CURRENT SOURCES ***
-
-https://gems.ruby-china.org
-# 请确保只有 gems.ruby-china.org
-$ gem install compass
-```
+目前已支持**sass**文件的编译
 
 
 ## 快速开始
@@ -123,13 +105,13 @@ $ ath2 a --h5 [h5 template]
 然后根据提示一步一步来，将会自动生成项目的结构和所需文件代码
 
 ### 创建模块
-*注：单页应用无此功能*
+*注：单页应用及H5无此功能*
 
 #### 创建命令
 ```
 $ ath2 m [模块名]
 ```
-多页应用每个模块相当于一个页面，H5应用每个模块相当于一个js类
+多页应用每个模块相当于一个页面
 
 同时提供了通过携带参数快速创建模块的命令
 
@@ -169,7 +151,9 @@ $ ath2 pa --name hello --description 测试
 然后根据提示一步一步来，将会自动生成athena2的page目录和模板
 
 ### 创建组件
-*注：H5应用无此功能*
+
+H5应用每个组件相当于一个js类
+
 #### 创建命令
 ```
 $ ath2 c [组件名]
@@ -389,9 +373,9 @@ module.exports = {
 
 ## LICENCE
 
-The MIT License (MIT)
+MIT License
 
-Copyright (c) 2015
+Copyright (c) 2017 o2team
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

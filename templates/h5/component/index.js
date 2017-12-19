@@ -6,7 +6,7 @@ const ora = require('ora')
 const uuid = require('uuid')
 
 module.exports = function create (creater, params, helper, cb) {
-  const { appName, template, moduleName, description, date } = params
+  const { appName, template, componentName, description, date } = params
   // create module dir
   const sourceRootDir = 'src'
   const jsDir = 'js'
@@ -19,15 +19,15 @@ module.exports = function create (creater, params, helper, cb) {
   }
 
   // copy files
-  creater.template(template, 'module', 'module.js', path.join(sourceRootDir, jsDir, `${moduleName}.js`), {
-    moduleName: moduleName,
+  creater.template(template, 'component', 'component.js', path.join(sourceRootDir, jsDir, `${componentName}.js`), {
+    componentName: componentName,
     date,
     description,
   })
 
   creater.fs.commit(() => {
     console.log()
-    console.log(chalk.green(`Create module ${chalk.green.bold(moduleName)} Successfully!`))
+    console.log(chalk.green(`Create component ${chalk.green.bold(componentName)} Successfully!`))
     if (typeof cb === 'function') {
       cb()
     }
