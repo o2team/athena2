@@ -45,14 +45,6 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     }, buildConfig.module.imageMin)
   })
 
-  // imgLoaders.push({
-  //   loader: 'url-loader',
-  //   options: {
-  //     limit: 2000,
-  //     name: imgName
-  //   }
-  // })
-
   if (outputCSS && !isEmptyObject(outputCSS)) {
     for (const key in outputCSS) {
       const extractFile = new ExtractTextPlugin(key)

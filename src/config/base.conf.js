@@ -7,6 +7,8 @@ const browserList = require('./browser_list')
 module.exports = function (appPath, buildConfig, template, platform, framework) {
   const { env = {}, defineConstants = {}, staticDirectory } = buildConfig
   let imgName, mediaName, fontName, extName
+  const imgLimit = buildConfig.module && buildConfig.module.base64 && buildConfig.module.base64.imageLimit || 2000
+  const fontLimit = buildConfig.module && buildConfig.module.base64 && buildConfig.module.base64.fontLimit || 2000
   if (template === 'h5') {
     imgName = 'img/[name].[ext]'
     mediaName = fontName = extName = 'plugin/[name].[ext]'
@@ -100,6 +102,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
               loader: require.resolve('file-loader'),
               options: {
+                limit: fontLimit,
                 name: fontName
               }
             },
@@ -107,7 +110,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               test: /\.(png|jpe?g|gif|bpm|svg)(\?.*)?$/,
               loader: require.resolve('url-loader'),
               options: {
-                limit: 2000,
+                limit: imgLimit,
                 name: imgName
               }
             },
@@ -115,6 +118,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               exclude: /\.js|\.css|\.scss|\.sass|\.html|\.json|\.ejs$/,
               loader: require.resolve('url-loader'),
               options: {
+                limit: 2000,
                 name: extName
               }
             }
