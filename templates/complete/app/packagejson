@@ -15,7 +15,7 @@
     ]
   },
   "dependencies": {<% if (framework === 'nerv') { %>
-    "nervjs": "^0.2.7"<% } else if (framework === 'react') { %>
+    "nervjs": "^1.0.0"<% } else if (framework === 'react') { %>
     "react": "^15.6.1",
     "react-dom": "^15.6.1"<% } else if (framework === 'vue') { %>
     "vue": "^2.4.2",

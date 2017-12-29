@@ -1,6 +1,8 @@
 const path = require('path')
 const webpack = require('webpack')
 
+const HappyPack = require('happypack')
+
 const Util = require('../util')
 const browserList = require('./browser_list')
 
@@ -80,7 +82,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
             {
               test: /\.js|jsx$/,
               exclude: /node_modules/,
-              use: jsConfUse
+              use: ['happypack/loader?id=js']
             },
             {
               test: /\.html$/,
@@ -141,7 +143,11 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       }),
       new webpack.DefinePlugin(Object.assign({
         'process.env': env
-      }, defineConstants))
+      }, defineConstants)),
+      new HappyPack({
+        id: 'js',
+        loaders: jsConfUse
+      })
     ]
   }
 }

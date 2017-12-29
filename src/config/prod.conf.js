@@ -3,6 +3,12 @@ const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+// add
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
+// const HappyPack = require('happypack')
+// const browserList = require('./browser_list')
+
+// end
 const _ = require('lodash')
 
 const { isEmptyObject } = require('../util')
@@ -131,25 +137,36 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       allowExternal: true,
       verbose: false
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      beautify: false,
-      mangle: {
-        screw_ie8: false,
-        keep_fnames: true,
-        properties: false,
-        keep_quoted: true
-      },
-      compress: {
-        warnings: false,
-        screw_ie8: false,
-        properties: false
-      },
-      output: {
-        keep_quoted_props: true
-      },
-      comments: false,
-      sourceMap
-    }),
+    // new webpack.optimize.UglifyJsPlugin({
+    //   beautify: false,
+    //   mangle: {
+    //     screw_ie8: false,
+    //     keep_fnames: true,
+    //     properties: false,
+    //     keep_quoted: true
+    //   },
+    //   compress: {
+    //     warnings: false,
+    //     screw_ie8: false,
+    //     properties: false
+    //   },
+    //   output: {
+    //     keep_quoted_props: true
+    //   },
+    //   comments: false,
+    //   sourceMap
+    // }),
+    new ParallelUglifyPlugin({
+     cacheDir: '.cache/',
+     uglifyJS:{
+       output: {
+         comments: false
+       },
+       compress: {
+         properties: false
+       }
+     }
+   }),
     ...cssExtractPlugins,
   ]
 
@@ -159,6 +176,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
         fileName: 'asset-manifest.json'
       }))
   }
+
   return {
     devtool: devtool,
     module: {

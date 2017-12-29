@@ -16,4 +16,6 @@ program
   .command('component [name]', 'Create a component').alias('c')
   .command('serve [modNames]', 'Development preview').alias('s')
   .command('build [modNames]', 'Build for production').alias('b')
+  .command('update [version]', 'Update Athena2').alias('up')
+  .command('publish', 'Publish your project').alias('pu')
   .parse(process.argv)

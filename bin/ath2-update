@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const chalk = require('chalk')
+const request = require('request')
+const shelljs = require('shelljs')
+const ora = require('ora')
+
+const { getConf } = require('../src/build')
+
+const {
+  getAthenaVersion,
+  shouldUseCnpm
+} = require('../src/util')
+
+
+const api = 'http://localhost:3000/ath2/v'
+
+program
+  .usage('<version> [options]')
+  .option('--version', 'Choosen version')
+  .option('--debug', 'Debug info')
+  .parse(process.argv)
+
+  const args = program.args
+
+  const version = args[0] || program.version
+
+function addNewVersion () {
+  const params = {
+    version: '0.0.9-alpha.1'
+  }
+  request.post(api, {
+    form: params,
+    timeout: 5000
+  })
+}
+function checkAthenaVersion () {
+  request.get(api, (err, res, body) => {
+    if (err) {
+      console.log(chalk.red("Can not get the latest athena2's version😢"))
+      return
+    }
+    if (res.statusCode === 200 || res.statusCode === 201) {
+      const curVersion = getAthenaVersion()
+      const latestVersion = JSON.parse(body).version
+      const ifLatest = curVersion === latestVersion
+      if (ifLatest) {
+        console.log(chalk.green("Now it's the latest version"))
+      } else {
+        const command = `${shouldUseCnpm() ? 'cnpm' : 'npm'} i -g athena2@${latestVersion}`
+        const installSpinner = ora(`Executing ${chalk.cyan.bold(command)}, it will take some time...`).start()
+        const install = shelljs.exec(command, { silent: true })
+        if (install.code === 0) {
+          installSpinner.color = 'green'
+          installSpinner.succeed('Install success')
+          console.log(`${install.stderr}${install.stdout}`)
+        } else {
+          installSpinner.color = 'red'
+          installSpinner.fail(chalk.red('Auto update failed! Please update the athena2 manually'))
+          console.log(`${install.stderr}${install.stdout}`)
+        }
+      }
+    }
+  })
+}
+
+checkAthenaVersion()
