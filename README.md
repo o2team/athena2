@@ -17,6 +17,8 @@ Athena2
 ### 创建项目
 
 - [x] 生成项目、模块、页面、组件文件结构
+- [x] 提供多页、单页、H5三大模板
+- [x] 支持[Nerv](https://nerv.aotu.io/)、[React](https://reactjs.org/)、[Vue](https://vuejs.org/index.html) 热门前端框架
 
 ### 编译预览
 
