@@ -82,7 +82,7 @@ function buildCore (conf, options) {
       dllWebpackCompiler = webpack(webpackDllConf)
     }
   }
-  const webpackConf = webpackMerge(webpackBaseConf, webpackProdConf, customWebpackConf)
+  let webpackConf = webpackMerge(webpackBaseConf, webpackProdConf)
   const htmlPages = getPageHtml(conf)
   webpackConf.entry = entry
   webpackConf.output = {
@@ -141,6 +141,7 @@ function buildCore (conf, options) {
             }
           }
         }
+        webpackConf = webpackMerge(webpackConf, customWebpackConf)
         const compiler = createCompiler(webpack, webpackConf)
         return buildCompilerRun(compiler, buildSpinner, conf)
       }
@@ -194,8 +195,8 @@ function buildCore (conf, options) {
         }
       }
     }
+    webpackConf = webpackMerge(webpackConf, customWebpackConf)
     const compiler = createCompiler(webpack, webpackConf)
-
     buildCompilerRun(compiler, buildSpinner, conf)
   }
 }

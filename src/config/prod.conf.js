@@ -5,9 +5,6 @@ const ManifestPlugin = require('webpack-manifest-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 // add
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
-// const HappyPack = require('happypack')
-// const browserList = require('./browser_list')
-
 // end
 const _ = require('lodash')
 
@@ -158,7 +155,8 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     // }),
     new ParallelUglifyPlugin({
      cacheDir: '.cache/',
-     uglifyJS:{
+     uglifyES: {
+       ecma: 6,
        output: {
          comments: false
        },

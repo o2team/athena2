@@ -1,8 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
 
-const HappyPack = require('happypack')
-
 const Util = require('../util')
 const browserList = require('./browser_list')
 
@@ -69,7 +67,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     : {
       '@APP': appPath
     }
-  if (framework !== 'nerv') {
+  if (template !== 'h5' && framework !== 'nerv') {
     jsConfUse.push({
       loader: require.resolve('hot-module-accept')
     })
@@ -82,7 +80,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
             {
               test: /\.js|jsx$/,
               exclude: /node_modules/,
-              use: ['happypack/loader?id=js']
+              use: jsConfUse
             },
             {
               test: /\.html$/,
@@ -143,11 +141,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       }),
       new webpack.DefinePlugin(Object.assign({
         'process.env': env
-      }, defineConstants)),
-      new HappyPack({
-        id: 'js',
-        loaders: jsConfUse
-      })
+      }, defineConstants))
     ]
   }
 }

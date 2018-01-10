@@ -73,7 +73,7 @@ function serveCore (conf, options, sample) {
   }
   const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackDevConf = require('../config/dev.conf')(conf.appPath, buildConfig, template, platform, framework)
-  const webpackConf = webpackMerge(webpackBaseConf, webpackDevConf, customWebpackConf)
+  let webpackConf = webpackMerge(webpackBaseConf, webpackDevConf)
   const htmlPages = getPageHtml(conf)
   let htmlPlugins
   if (!isSample) {
@@ -123,6 +123,7 @@ function serveCore (conf, options, sample) {
     chunkFilename: `${chunkDirectory}/[name].chunk.js`
   }
   webpackConf.plugins = webpackConf.plugins.concat(htmlPlugins)
+  webpackConf = webpackMerge(webpackConf, customWebpackConf)
   const compiler = createCompiler(webpack, webpackConf)
   const webpackDevServerConf = require('../config/devServer.conf')({
     publicPath,

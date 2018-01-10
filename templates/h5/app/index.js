@@ -143,7 +143,7 @@ function allFilesPath (dir, done) {
     list.forEach((file) => {
       file = path.resolve(dir, file)
       fs.stat(file, (err, stat) => {
-        if (stat && stat.isDirectory() && !/.git|node_modules|cache/i.test(file)) {
+        if (stat && stat.isDirectory() && !/.git|cache/i.test(file)) {
           allFilesPath(file, (err, res) => {
             results = results.concat(res)
             if (!--pending) done(null, results)
