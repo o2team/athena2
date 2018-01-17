@@ -12,7 +12,7 @@ const { isEmptyObject } = require('../util')
 const { getPostcssPlugins } = require('./postcss.conf')
 
 module.exports = function (appPath, buildConfig, template, platform, framework) {
-  const { sourceMap, output = {}, sourceRoot, outputRoot } = buildConfig
+  const { sourceMap, output = {}, sourceRoot, outputRoot, library } = buildConfig
   const outputCSS = output.css || {}
   const cssLoaders = []
   const cssExtractPlugins = []
@@ -129,8 +129,8 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
 
   const plugins = [
     new CleanWebpackPlugin(path.join(appPath, outputRoot), {
-      allowExternal: true,
-      verbose: false
+      verbose: false,
+      exclude: [library && library.directory ? library.directory : '']
     }),
     // new webpack.optimize.UglifyJsPlugin({
     //   beautify: false,

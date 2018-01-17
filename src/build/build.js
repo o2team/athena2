@@ -66,8 +66,6 @@ function buildCore (conf, options) {
   } else {
     customWebpackConf = buildConfig.webpack
   }
-  const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
-  const webpackProdConf = require('../config/prod.conf')(conf.appPath, buildConfig, template, platform, framework)
   let dllWebpackCompiler
   let libContext
   const library = buildConfig.library
@@ -82,6 +80,9 @@ function buildCore (conf, options) {
       dllWebpackCompiler = webpack(webpackDllConf)
     }
   }
+  buildConfig.library = library
+  const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
+  const webpackProdConf = require('../config/prod.conf')(conf.appPath, buildConfig, template, platform, framework)
   let webpackConf = webpackMerge(webpackBaseConf, webpackProdConf)
   const htmlPages = getPageHtml(conf)
   webpackConf.entry = entry
@@ -100,10 +101,6 @@ function buildCore (conf, options) {
       data: {
         htmlPages
       }
-    }))
-  } else {
-    webpackConf.plugins.push(new HtmlWebpackPlugin({
-      template: htmlPages['index']
     }))
   }
   if (dllWebpackCompiler) {
@@ -141,6 +138,14 @@ function buildCore (conf, options) {
               }))
             }
           }
+        } else {
+          webpackConf.plugins.push(new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: htmlPages['index'],
+            alwaysWriteToDisk: true,
+            chunks: 'index.js',
+            vendorFiles
+          }))
         }
         webpackConf = webpackMerge(webpackConf, customWebpackConf)
         const compiler = createCompiler(webpack, webpackConf)
@@ -196,6 +201,14 @@ function buildCore (conf, options) {
           }))
         }
       }
+    } else {
+      webpackConf.plugins.push(new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template: htmlPages['index'],
+        alwaysWriteToDisk: true,
+        chunks: 'index.js',
+        vendorFiles
+      }))
     }
     webpackConf = webpackMerge(webpackConf, customWebpackConf)
     const compiler = createCompiler(webpack, webpackConf)
