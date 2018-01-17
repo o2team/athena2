@@ -153,14 +153,20 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     // }),
     new ParallelUglifyPlugin({
       cacheDir: '.cache/',
-      uglifyES: {
-        ecma: 6,
-        output: {
-          comments: false
+      uglifyJS: {
+        mangle: {
+          properties: false
         },
         compress: {
+          warnings: false,
           properties: false
-        }
+        },
+        output: {
+          comments: false,
+          quote_keys: true,
+          keep_quoted_props: true
+        },
+        sourceMap
       }
     }),
     ...cssExtractPlugins
@@ -170,7 +176,8 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     plugins.push(
       new ManifestPlugin({
         fileName: 'asset-manifest.json'
-      }))
+      })
+    )
   }
 
   return {
