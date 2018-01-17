@@ -8,8 +8,6 @@ const sprites = require('postcss-sprites')
 const browserList = require('./browser_list')
 const { isEmptyObject } = require('../util')
 
-const NODE_ENV = process.env.NODE_ENV || ''
-
 const plugins = []
 
 exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', template = 'complete') {
@@ -43,30 +41,29 @@ exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', templat
       verbose: false,
       // 将 img 目录下的子目录作为分组，子目录下的 png 图片会合成雪碧图
       groupBy: function (image) {
-        let reg = template === 'h5'
+        const reg = template === 'h5'
           ? /img\/(\S+)\/\S+\.png$/.exec(image.url)
           : /images\/(\S+)\/\S+\.png$/.exec(image.url)
-        let groupName = reg ? reg[1] : reg
+        const groupName = reg ? reg[1] : reg
         image.ratio = 1
         if (groupName) {
           let ratio = /@(\d+)x$/gi.exec(groupName)
           if (ratio) {
             ratio = ratio[1]
             while (ratio > 10) {
-              ratio = ratio / 10;
+              ratio = ratio / 10
             }
-            image.ratio = ratio;
+            image.ratio = ratio
           }
         }
-        return groupName ? Promise.resolve(groupName) : Promise.reject()
+        return groupName ? Promise.resolve(groupName) : Promise.reject(new Error(`The image ${image.url} is incorrect.`))
       },
       // 非 img 子目录下面的 png 不合
       filterBy: function (image) {
-        // return reg ? Promise.resolve() : Promise.reject()
-        let reg = template === 'h5'
+        const reg = template === 'h5'
           ? /img\/(\S+)\/\S+\.png$/.test(image.url)
           : /images\/(\S+)\/\S+\.png$/.test(image.url)
-        return reg ? Promise.resolve() : Promise.reject()
+        return reg ? Promise.resolve() : Promise.reject(new Error(`The image ${image.url} is incorrect.`))
       }
     }
     const updateRule = require('postcss-sprites/lib/core').updateRule

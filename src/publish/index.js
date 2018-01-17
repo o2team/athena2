@@ -1,5 +1,5 @@
-const fs = require('fs')
-const path = require('path')
+// const fs = require('fs')
+// const path = require('path')
 const FTPS = require('ftps')
 /*
   获取配置项
@@ -19,6 +19,6 @@ module.exports = function publish () {
 function createConnect (opts) {
   const ftps = new FTPS(opts)
   ftps.exec(function (err, res) {
-    console.log(err);
-  });
+    console.log(err)
+  })
 }

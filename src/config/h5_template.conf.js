@@ -118,7 +118,7 @@ const createFragment = function (buildConfig) {
     </script>
     <!-- end REM Zoom 计算 -->`
 
-  function HeadJavascriptInjectPlugin(options) {
+  function HeadJavascriptInjectPlugin (options) {
     // Configure your plugin with options...
   }
 

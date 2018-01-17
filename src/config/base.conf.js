@@ -7,8 +7,8 @@ const browserList = require('./browser_list')
 module.exports = function (appPath, buildConfig, template, platform, framework) {
   const { env = {}, defineConstants = {}, staticDirectory } = buildConfig
   let imgName, mediaName, fontName, extName
-  const imgLimit = buildConfig.module && buildConfig.module.base64 && buildConfig.module.base64.imageLimit || 2000
-  const fontLimit = buildConfig.module && buildConfig.module.base64 && buildConfig.module.base64.fontLimit || 2000
+  const imgLimit = (buildConfig.module && buildConfig.module.base64 && buildConfig.module.base64.imageLimit) || 2000
+  const fontLimit = (buildConfig.module && buildConfig.module.base64 && buildConfig.module.base64.fontLimit) || 2000
   if (template === 'h5') {
     imgName = 'img/[name].[ext]'
     mediaName = fontName = extName = 'plugin/[name].[ext]'

@@ -1,5 +1,4 @@
 const path = require('path')
-const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
@@ -13,13 +12,12 @@ const { isEmptyObject } = require('../util')
 const { getPostcssPlugins } = require('./postcss.conf')
 
 module.exports = function (appPath, buildConfig, template, platform, framework) {
-  const { sourceMap, output = {}, sourceRoot, outputRoot, staticDirectory } = buildConfig
+  const { sourceMap, output = {}, sourceRoot, outputRoot } = buildConfig
   const outputCSS = output.css || {}
   const cssLoaders = []
   const cssExtractPlugins = []
   const devtool = template === 'h5' ? '' : 'hidden-source-map'
-  let imgName = template === 'h5' ? 'img/[name].[ext]' : `${staticDirectory}/images/[name].[ext]`
-  let imgLoaders = []
+  const imgLoaders = []
   buildConfig.module.imageMin && buildConfig.module.imageMin.enable && imgLoaders.push({
     loader: 'image-webpack-loader',
     options: _.merge({
@@ -154,18 +152,18 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     //   sourceMap
     // }),
     new ParallelUglifyPlugin({
-     cacheDir: '.cache/',
-     uglifyES: {
-       ecma: 6,
-       output: {
-         comments: false
-       },
-       compress: {
-         properties: false
-       }
-     }
-   }),
-    ...cssExtractPlugins,
+      cacheDir: '.cache/',
+      uglifyES: {
+        ecma: 6,
+        output: {
+          comments: false
+        },
+        compress: {
+          properties: false
+        }
+      }
+    }),
+    ...cssExtractPlugins
   ]
 
   if (template !== 'h5') {
