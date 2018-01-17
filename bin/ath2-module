@@ -30,14 +30,14 @@ if (appConf && appConf.template !== 'complete') {
   } else {
     console.log(chalk.red(`Is a H5 App, please use command ${chalk.bold('ath2 c')}`))
   }
-  return
+  process.exit(1)
 }
 if (!appConf) {
   console.log(chalk.red(`Is not a Athena App, please check if the file ${chalk.bold('app.conf.js')} actually exists!😢`))
-  return
+  process.exit(1)
 } else if (appConf && moduleConf) {
   console.log(chalk.red(`Current dir is a module, please go back to the App root dir!😢`))
-  return
+  process.exit(1)
 }
 
 const appName = appConf.app

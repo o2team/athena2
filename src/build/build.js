@@ -120,13 +120,14 @@ function buildCore (conf, options) {
             manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
           })
         )
-        if (libContext)
-        vendorFiles = fs.readdirSync(libContext).map(file => {
-          if (/dll\.js$/.test(file)) {
-            return `${publicPath}${urlJoin(libraryDir, file)}`
-          }
-          return null
-        }).filter(Boolean)
+        if (libContext) {
+          vendorFiles = fs.readdirSync(libContext).map(file => {
+            if (/dll\.js$/.test(file)) {
+              return `${publicPath}${urlJoin(libraryDir, file)}`
+            }
+            return null
+          }).filter(Boolean)
+        }
         if (appConf.template === 'complete') {
           for (const mod in htmlPages) {
             for (const page in htmlPages[mod]) {
@@ -143,7 +144,7 @@ function buildCore (conf, options) {
         }
         webpackConf = webpackMerge(webpackConf, customWebpackConf)
         const compiler = createCompiler(webpack, webpackConf)
-        return buildCompilerRun(compiler, buildSpinner, conf)
+        return buildCompilerRun(compiler, buildSpinner, conf, options)
       }
       if (errors.length) {
         errors.splice(1)
@@ -174,13 +175,14 @@ function buildCore (conf, options) {
         })
       )
     }
-    if (libContext)
-    vendorFiles = fs.readdirSync(libContext).map(file => {
-      if (/dll\.js$/.test(file)) {
-        return `${publicPath}${urlJoin(libraryDir, file)}`
-      }
-      return null
-    }).filter(Boolean)
+    if (libContext) {
+      vendorFiles = fs.readdirSync(libContext).map(file => {
+        if (/dll\.js$/.test(file)) {
+          return `${publicPath}${urlJoin(libraryDir, file)}`
+        }
+        return null
+      }).filter(Boolean)
+    }
     if (appConf.template === 'complete') {
       for (const mod in htmlPages) {
         for (const page in htmlPages[mod]) {
@@ -197,29 +199,28 @@ function buildCore (conf, options) {
     }
     webpackConf = webpackMerge(webpackConf, customWebpackConf)
     const compiler = createCompiler(webpack, webpackConf)
-    buildCompilerRun(compiler, buildSpinner, conf)
+    buildCompilerRun(compiler, buildSpinner, conf, options)
   }
 }
 
-function buildCompilerRun (compiler, buildSpinner, conf) {
+function buildCompilerRun (compiler, buildSpinner, conf, options) {
   compiler.run((err, stats) => {
     if (err) {
       return printBuildError(err)
     }
-    // temp
-    process.stdout.write(stats.toString({
-      colors: true,
-      modules: false,
-      children: false,
-      chunks: false,
-      chunkModules: false
-    }) + '\n')
 
     const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
     const isSuccess = !errors.length && !warnings.length
     if (isSuccess) {
       buildSpinner.succeed(chalk.green('Compile successfully!\n'))
-      if (!!~process.argv.indexOf('--zip')) {
+      process.stdout.write(stats.toString({
+        colors: true,
+        modules: false,
+        children: false,
+        chunks: false,
+        chunkModules: false
+      }) + '\n')
+      if (options.zip) {
         buildArchive(conf)
       }
       return
@@ -247,26 +248,25 @@ function buildCompilerRun (compiler, buildSpinner, conf) {
 }
 
 function buildArchive (conf) {
-  console.log(chalk.yellow('  Archive begin ...'))
-  console.log('')
+  console.log()
+  const archiveSpinner = ora('Archive begin ...').start()
   const archivePath = conf.buildConfig.outputRoot
   const archiveType = 'zip'
-  const outputPath = path.join(conf.appPath,  `project.${archiveType}`)
+  const outputPath = path.join(conf.appPath, `${conf.appConf.app}.${archiveType}`)
   const output = fs.createWriteStream(outputPath)
   const archive = archiver(archiveType)
   output.on('close', function () {
-    console.log(chalk.yellow(`  Archive finished, output: ${(archive.pointer()/1024).toFixed(1)}kb`))
-    console.log('')
+    archiveSpinner.succeed(chalk.green(`Archive finished, output: ${(archive.pointer() / 1024).toFixed(1)}kb`))
   })
   archive.on('warning', function (err) {
     if (err.code === 'ENOENT') {
-      console.log(chalk.red(`  Archive warn:  ${err}`))
+      archiveSpinner.warn(chalk.yellow(`Archive warn:  ${err.toString()}`))
     } else {
-      console.log(chalk.red(`  Archive error:  ${err}`))
+      archiveSpinner.fail(chalk.red(`Archive error:  ${err.toString()}`))
     }
   })
   archive.on('error', function (err) {
-    console.log(chalk.red(`  Archive error:  ${err}`))
+    archiveSpinner.fail(chalk.red(`Archive error:  ${err.message}`))
   })
   archive.pipe(output)
   archive.directory(archivePath, false)
@@ -295,7 +295,6 @@ function printBuildError (err) {
     } catch (ignored) {
       console.log('Failed to minify the bundle.', err)
     }
-    console.log('Read more here: http://bit.ly/2tRViJ9')
   } else {
     console.log((message || err) + '\n')
   }

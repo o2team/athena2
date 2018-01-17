@@ -16,7 +16,7 @@ program
   .parse(process.argv)
 
 const args = program.args
-const { debug } = program
+const { debug, zip } = program
 
 console.log(chalk.green(`Allo ${chalk.bold(getConfig().username)}! Starting build app...`))
 console.log()
@@ -24,4 +24,4 @@ console.log()
 const build = require('../src/build/build')
 process.env.NODE_ENV = 'production'
 
-build(args, { debug })
+build(args, { debug, zip })

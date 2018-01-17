@@ -1,7 +1,7 @@
 const path = require('path')
 const chalk = require('chalk')
 const webpack = require('webpack')
-const WebpackDevServer = require('webpack-dev-server');
+const WebpackDevServer = require('webpack-dev-server')
 const webpackMerge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
@@ -130,7 +130,7 @@ function serveCore (conf, options, sample) {
     contentBase,
     protocol,
     host,
-    publicUrl: urls.lanUrlForConfig,
+    publicUrl: urls.lanUrlForConfig
   })
   const server = new WebpackDevServer(compiler, webpackDevServerConf)
   server.listen(port, host, err => {

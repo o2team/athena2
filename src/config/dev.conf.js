@@ -5,8 +5,6 @@ const { getPostcssPlugins } = require('./postcss.conf')
 const { shouldUseCnpm } = require('../util')
 
 module.exports = function (appPath, buildConfig, template, platform, framework) {
-  const { staticDirectory } = buildConfig
-  let imgName = template === 'h5' ? 'img/[name].[ext]' : `${staticDirectory}/images/[name].[ext]`
   return {
     devtool: 'cheap-module-eval-source-map',
     module: {
