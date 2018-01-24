@@ -2,9 +2,7 @@ const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
-// add
-const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
-// end
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const _ = require('lodash')
 
 const { isEmptyObject } = require('../util')
@@ -132,41 +130,24 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       verbose: false,
       exclude: [library && library.directory ? library.directory : '']
     }),
-    // new webpack.optimize.UglifyJsPlugin({
-    //   beautify: false,
-    //   mangle: {
-    //     screw_ie8: false,
-    //     keep_fnames: true,
-    //     properties: false,
-    //     keep_quoted: true
-    //   },
-    //   compress: {
-    //     warnings: false,
-    //     screw_ie8: false,
-    //     properties: false
-    //   },
-    //   output: {
-    //     keep_quoted_props: true
-    //   },
-    //   comments: false,
-    //   sourceMap
-    // }),
-    new ParallelUglifyPlugin({
-      cacheDir: '.cache/',
-      uglifyJS: {
+    new UglifyJsPlugin({
+      cache: true,
+      parallel: true,
+      sourceMap,
+      uglifyOptions: {
+        ie8: platform === 'pc',
+        keep_fnames: true,
         mangle: {
-          properties: false
-        },
-        compress: {
-          warnings: false,
-          properties: false
+          properties: {
+            keep_quoted: true
+          }
         },
         output: {
           comments: false,
-          quote_keys: true,
-          keep_quoted_props: true
+          keep_quoted_props: true,
+          beautify: false
         },
-        sourceMap
+        warnings: false
       }
     }),
     ...cssExtractPlugins
