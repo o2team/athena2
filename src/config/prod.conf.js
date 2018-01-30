@@ -16,6 +16,32 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
   const cssExtractPlugins = []
   const devtool = template === 'h5' ? '' : 'hidden-source-map'
   const imgLoaders = []
+  buildConfig.module = buildConfig.module || {}
+  const defaultCSSCompressConf = {
+    mergeRules: false,
+    mergeIdents: false,
+    reduceIdents: false,
+    discardUnused: false,
+    minifySelectors: false
+  }
+  const defaultJSCompressConf = {
+    keep_fnames: true,
+    mangle: {
+      properties: {
+        keep_quoted: true
+      }
+    },
+    output: {
+      comments: false,
+      keep_quoted_props: true,
+      beautify: false
+    },
+    warnings: false
+  }
+  const compress = Object.assign({}, {
+    css: defaultCSSCompressConf,
+    js: defaultJSCompressConf
+  }, buildConfig.module.compress)
   buildConfig.module.imageMin && buildConfig.module.imageMin.enable && imgLoaders.push({
     loader: 'image-webpack-loader',
     options: _.merge({
@@ -105,7 +131,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
             loader: require.resolve('css-loader'),
             options: {
               importLoaders: 1,
-              minimize: true,
+              minimize: compress.css,
               sourceMap
             }
           },
@@ -134,21 +160,9 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       cache: true,
       parallel: true,
       sourceMap,
-      uglifyOptions: {
-        ie8: platform === 'pc',
-        keep_fnames: true,
-        mangle: {
-          properties: {
-            keep_quoted: true
-          }
-        },
-        output: {
-          comments: false,
-          keep_quoted_props: true,
-          beautify: false
-        },
-        warnings: false
-      }
+      uglifyOptions: Object.assign({}, {
+        ie8: platform === 'pc'
+      }, compress.js)
     }),
     ...cssExtractPlugins
   ]
