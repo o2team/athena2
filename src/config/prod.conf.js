@@ -26,14 +26,10 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
   }
   const defaultJSCompressConf = {
     keep_fnames: true,
-    mangle: {
-      properties: {
-        keep_quoted: true
-      }
-    },
     output: {
       comments: false,
       keep_quoted_props: true,
+      quote_keys: true,
       beautify: false
     },
     warnings: false
