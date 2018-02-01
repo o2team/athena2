@@ -22,8 +22,8 @@
     "vue-router": "^3.0.1"<% } %>
   },
   "devDependencies": {
-    "babel-eslint": "^7.2.3",
-    "eslint": "^4.6.0",
+    "babel-eslint": "^8.2.1",
+    "eslint": "^4.16.0",
     "eslint-config-standard": "^10.2.1",<% if (framework === "nerv" || framework === "react") { %>
     "eslint-config-standard-jsx": "^4.0.2",<%}%>
     "eslint-plugin-import": "^2.7.0",

@@ -34,6 +34,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
           }]
         ],
         plugins: [
+          require('babel-plugin-transform-decorators-legacy').default,
           require('babel-plugin-transform-class-properties'),
           require('babel-plugin-transform-object-rest-spread'),
           require('babel-plugin-syntax-dynamic-import'),
