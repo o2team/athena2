@@ -3,10 +3,9 @@ const path = require('path')
 const chalk = require('chalk')
 const shelljs = require('shelljs')
 const ora = require('ora')
-const uuid = require('uuid')
 
 module.exports = function create (creater, params, helper, cb) {
-  const { appName, appId, description, framework, template, date, platform, sass, pageName } = params
+  const { appName, appId, description, framework, template, date, platform, sass } = params
   const sourceRootDir = 'src'
   const configDir = 'config'
   const configDirPath = path.join(appName, configDir)
@@ -43,6 +42,7 @@ module.exports = function create (creater, params, helper, cb) {
     framework,
     date
   })
+  creater.template(template, 'app', 'jsconfigjson', path.join(appName, 'jsconfig.json'))
   creater.template(template, 'app', 'app-conf', path.join(appName, 'app.conf.js'), {
     appName,
     appId,
@@ -65,6 +65,7 @@ module.exports = function create (creater, params, helper, cb) {
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.gitignore`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.eslintrc.js`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/package.json`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/jsconfig.json`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/app.conf.js`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/index.html`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/index.js`)}`)

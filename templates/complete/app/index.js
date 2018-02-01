@@ -54,6 +54,7 @@ module.exports = function create (creater, params, helper, cb) {
     date,
     sass
   })
+  creater.template(template, 'app', 'jsconfigjson', path.join(appName, 'jsconfig.json'))
   creater.fs.commit(() => {
     console.log()
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created app: ${chalk.grey.bold(appName)}`)}`)
@@ -69,6 +70,7 @@ module.exports = function create (creater, params, helper, cb) {
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.gitignore`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.eslintrc.js`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/package.json`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/jsconfig.json`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/app.conf.js`)}`)
     console.log()
     const gitInitSpinner = ora(`cd ${chalk.cyan.bold(appName)}, executing ${chalk.cyan.bold('git init')}`).start()

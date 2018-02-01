@@ -3,7 +3,6 @@ const path = require('path')
 const chalk = require('chalk')
 const shelljs = require('shelljs')
 const ora = require('ora')
-const uuid = require('uuid')
 const download = require('git-clone')
 
 module.exports = function create (creater, params, helper, cb) {
@@ -43,8 +42,6 @@ function downloadTemplate (creater, params, helper, cb) {
 function copyFiles (creater, params, helper, cb) {
   const { appName, appId, description, template, date, platform, h5 } = params
   const sourceRootDir = 'src'
-  const configDir = 'config'
-  const configDirPath = path.join(appName, configDir)
   const sourceRootPath = path.join(appName, sourceRootDir)
   // create app dir
   fs.mkdirpSync(appName)
@@ -53,9 +50,9 @@ function copyFiles (creater, params, helper, cb) {
   allFilesPath(path.join(creater.rootPath, `templates/h5/app/${h5}`), (err, results) => {
     if (err) throw err
     results.forEach(item => {
-      let itemPath = item.split(path.sep)
-      let fileRootPath = itemPath[itemPath.length - 2]
-      let fileName = path.basename(item)
+      const itemPath = item.split(path.sep)
+      const fileRootPath = itemPath[itemPath.length - 2]
+      const fileName = path.basename(item)
       if (fileRootPath === h5) {
         creater.template(template, `app/${h5}/`, fileName, path.join(sourceRootPath, fileName), { appName })
       } else {
@@ -82,6 +79,7 @@ function copyFiles (creater, params, helper, cb) {
       date,
       description
     })
+    creater.template(template, 'app', 'jsconfigjson', path.join(appName, 'jsconfig.json'))
     creater.template(template, 'app', 'app-conf', path.join(appName, 'app.conf.js'), {
       appName,
       appId,
@@ -130,7 +128,6 @@ function copyFiles (creater, params, helper, cb) {
         cb()
       }
     })
-
   })
 }
 
@@ -143,8 +140,14 @@ function allFilesPath (dir, done) {
     list.forEach((file) => {
       file = path.resolve(dir, file)
       fs.stat(file, (err, stat) => {
+        if (err) {
+          return
+        }
         if (stat && stat.isDirectory() && !/.git|cache/i.test(file)) {
           allFilesPath(file, (err, res) => {
+            if (err) {
+              return
+            }
             results = results.concat(res)
             if (!--pending) done(null, results)
           })
