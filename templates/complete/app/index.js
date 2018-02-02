@@ -34,6 +34,7 @@ module.exports = function create (creater, params, helper, cb) {
   })
   creater.template(template, 'app', 'editorconfig', path.join(appName, '.editorconfig'))
   creater.template(template, 'app', 'gitignore', path.join(appName, '.gitignore'))
+  creater.template(template, 'app', 'jsconfigjson', path.join(appName, 'jsconfig.json'))
   creater.template(template, 'app', 'eslintconfig', path.join(appName, '.eslintrc.js'), {
     appName,
     framework,
@@ -54,7 +55,7 @@ module.exports = function create (creater, params, helper, cb) {
     date,
     sass
   })
-  creater.template(template, 'app', 'jsconfigjson', path.join(appName, 'jsconfig.json'))
+
   creater.fs.commit(() => {
     console.log()
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created app: ${chalk.grey.bold(appName)}`)}`)
