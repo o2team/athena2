@@ -12,7 +12,7 @@ module.exports = {
     user: 'labs',
     pass: 'labslabslabs',
     port: 22,
-    localPath: '/dist/'
+    localPath: '/dist/',
     remotePath: '/usr/share/nginx/html/public/labs/' // required
   }
 }
