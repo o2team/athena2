@@ -18,7 +18,9 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
                 {
                   loader: require.resolve('css-loader'),
                   options: {
-                    importLoaders: 1
+                    importLoaders: 2,
+                    modules: true,
+                    localIdentName:'[name]_[local]_[hash:base64:5]'
                   }
                 },
                 {

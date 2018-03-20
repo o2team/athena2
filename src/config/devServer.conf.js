@@ -1,4 +1,4 @@
-module.exports = function ({publicPath, contentBase, protocol, host, publicUrl}) {
+module.exports = function ({publicPath, contentBase, protocol, host, publicUrl,historyApiFallback}) {
   return {
     disableHostCheck: process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
     compress: true,
@@ -7,7 +7,7 @@ module.exports = function ({publicPath, contentBase, protocol, host, publicUrl})
     hot: true,
     inline: true,
     quiet: true,
-    publicPath,
+    publicPath:publicPath,
     // stats: "errors-only",
     watchOptions: {
       ignored: /node_modules/
@@ -15,7 +15,7 @@ module.exports = function ({publicPath, contentBase, protocol, host, publicUrl})
     https: protocol === 'https',
     host: host,
     overlay: true,
-    historyApiFallback: {
+    historyApiFallback: historyApiFallback?historyApiFallback:{
       disableDotRule: true
     },
     public: publicUrl

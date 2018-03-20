@@ -51,7 +51,8 @@ function serveCore (conf, options, sample) {
     port,
     publicPath,
     outputRoot,
-    chunkDirectory
+    chunkDirectory,
+    historyApiFallback
     // staticDirectory
   } = buildConfig
   conf.buildConfig = buildConfig
@@ -130,7 +131,8 @@ function serveCore (conf, options, sample) {
     contentBase,
     protocol,
     host,
-    publicUrl: urls.lanUrlForConfig
+    publicUrl: urls.lanUrlForConfig,
+    historyApiFallback,
   })
   const server = new WebpackDevServer(compiler, webpackDevServerConf)
   server.listen(port, host, err => {

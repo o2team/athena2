@@ -79,9 +79,10 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
             {
               loader: require.resolve('css-loader'),
               options: {
-                importLoaders: 1,
-                minimize: true,
-                sourceMap
+                importLoaders: 2,
+                localIdentName:'[hash:base64:5]',
+                modules: true,
+                minimize: true
               }
             },
             {
@@ -104,7 +105,9 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
         {
           loader: require.resolve('css-loader'),
           options: {
-            importLoaders: 1
+            importLoaders: 2,
+            localIdentName:'[hash:base64:5]',
+            modules: true
           }
         },
         {
@@ -126,9 +129,10 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
           {
             loader: require.resolve('css-loader'),
             options: {
-              importLoaders: 1,
+              importLoaders: 2,
+              modules: true,
               minimize: compress.css,
-              sourceMap
+              localIdentName:'[hash:base64:5]'
             }
           },
           {
