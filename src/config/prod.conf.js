@@ -147,7 +147,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       })
     })
     cssExtractPlugins.push(new ExtractTextPlugin({
-      filename: 'css/[name].css'
+      filename: 'css/[name].[hash:6].css'
     }))
   }
 

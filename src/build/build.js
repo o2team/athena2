@@ -88,9 +88,9 @@ function buildCore (conf, options) {
   webpackConf.entry = entry
   webpackConf.output = {
     path: path.join(conf.appPath, outputRoot),
-    filename: 'js/[name].js',
+    filename: 'js/[name].[hash:6].js',
     publicPath,
-    chunkFilename: `${chunkDirectory}/[name].chunk.js`
+    chunkFilename: `${chunkDirectory}/[name].[hash:6].chunk.js`
   }
   if (appConf.template === 'complete') {
     webpackConf.plugins.push(new HtmlWebpackPlugin({
