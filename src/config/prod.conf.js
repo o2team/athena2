@@ -3,7 +3,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const _ = require('lodash')
 
 const { isEmptyObject } = require('../util')
 
@@ -38,33 +37,6 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     css: defaultCSSCompressConf,
     js: defaultJSCompressConf
   }, buildConfig.module.compress)
-  buildConfig.module.imageMin && buildConfig.module.imageMin.enable && imgLoaders.push({
-    loader: 'image-webpack-loader',
-    options: _.merge({
-      mozjpeg: {
-        quality: 65
-      },
-      pngquant: {
-        quality: '55-70',
-        speed: 4
-      },
-      svgo: {
-        plugins: [{
-          removeViewBox: false
-        }, {
-          removeEmptyAttrs: false
-        }]
-      },
-      gifsicle: {
-        optimizationLevel: 7,
-        interlaced: false
-      },
-      optipng: {
-        optimizationLevel: 7,
-        interlaced: false
-      }
-    }, buildConfig.module.imageMin)
-  })
 
   if (outputCSS && !isEmptyObject(outputCSS)) {
     for (const key in outputCSS) {
