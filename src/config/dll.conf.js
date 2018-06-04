@@ -3,7 +3,7 @@ const webpack = require('webpack')
 
 module.exports = function (contextPath, buildConfig, libConfig) {
   const { env = {}, defineConstants = {} } = buildConfig
-  const name = libConfig.name || '[name]'
+  const name = libConfig.name || '[name].[hash:6]'
   return {
     entry: {
       vendor: libConfig.libs

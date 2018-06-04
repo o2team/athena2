@@ -51,7 +51,9 @@ function serveCore (conf, options, sample) {
     port,
     publicPath,
     outputRoot,
-    chunkDirectory
+    chunkDirectory,
+    historyApiFallback,
+    proxy,
     // staticDirectory
   } = buildConfig
   conf.buildConfig = buildConfig
@@ -118,9 +120,9 @@ function serveCore (conf, options, sample) {
   const contentBase = path.join(conf.appPath, outputRoot)
   webpackConf.output = {
     path: contentBase,
-    filename: '[name].js',
+    filename: '[name].[hash:6].js',
     publicPath,
-    chunkFilename: `${chunkDirectory}/[name].chunk.js`
+    chunkFilename: `${chunkDirectory}/[name].[hash:6].chunk.js`
   }
   webpackConf.plugins = webpackConf.plugins.concat(htmlPlugins)
   webpackConf = webpackMerge(webpackConf, customWebpackConf)
@@ -130,7 +132,9 @@ function serveCore (conf, options, sample) {
     contentBase,
     protocol,
     host,
-    publicUrl: urls.lanUrlForConfig
+    publicUrl: urls.lanUrlForConfig,
+    historyApiFallback,
+    proxy
   })
   const server = new WebpackDevServer(compiler, webpackDevServerConf)
   server.listen(port, host, err => {
