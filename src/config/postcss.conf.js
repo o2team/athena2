@@ -35,7 +35,7 @@ exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', templat
       retina: true,
       relativeTo: 'rule',
       spritesmith: {
-        algorithm: 'left-right',
+        algorithm: 'binary-tree',
         padding: 2
       },
       verbose: false,

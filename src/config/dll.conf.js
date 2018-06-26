@@ -3,11 +3,18 @@ const webpack = require('webpack')
 
 module.exports = function (contextPath, buildConfig, libConfig) {
   const { env = {}, defineConstants = {} } = buildConfig
-  const name = libConfig.name || '[name]'
+  const entry = {}
+  if (libConfig instanceof Array) {
+    libConfig.forEach((lib, idx) => {
+      entry[lib.name] = lib.libs
+    })
+  } else {
+    const name = libConfig.name || 'vendor'
+    entry[name] = libConfig.libs
+  }
+
   return {
-    entry: {
-      vendor: libConfig.libs
-    },
+    entry,
     module: {
       rules: [
         {
@@ -22,8 +29,8 @@ module.exports = function (contextPath, buildConfig, libConfig) {
     },
     output: {
       path: contextPath,
-      filename: `${name}.dll.js`,
-      library: `${name}_library`
+      filename: `[name].dll.js`,
+      library: `$[name]_library`
     },
     plugins: [
       new webpack.optimize.UglifyJsPlugin({
@@ -49,8 +56,8 @@ module.exports = function (contextPath, buildConfig, libConfig) {
       }, defineConstants)),
 
       new webpack.DllPlugin({
-        path: path.join(contextPath, `${name}-manifest.json`),
-        name: `${name}_library`,
+        path: path.join(contextPath, `[name]-manifest.json`),
+        name: `[name]_library`,
         context: contextPath
       })
     ]

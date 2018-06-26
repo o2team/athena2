@@ -73,7 +73,13 @@ function buildCore (conf, options) {
   let libraryDir
   if (conf.buildType === BUILD_APP) {
     if (library && !isEmptyObject(library)) {
-      libraryDir = library.directory || 'lib'
+      // 多入口
+      if (library instanceof Array) {
+        libraryDir = library[library.length - 1].directory || 'lib'
+      } else {
+        libraryDir = library.directory || 'lib'
+      }
+
       libContext = path.join(conf.appPath, outputRoot, libraryDir)
       fs.ensureDirSync(libContext)
       const webpackDllConf = require('../config/dll.conf')(libContext, buildConfig, library)
@@ -111,12 +117,23 @@ function buildCore (conf, options) {
       const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
       const isSuccess = !errors.length && !warnings.length
       if (isSuccess) {
-        webpackConf.plugins.push(
-          new webpack.DllReferencePlugin({
-            context: libContext,
-            manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
+        if (library instanceof Array) {
+          library.forEach((lib, idx) => {
+            webpackConf.plugins.push(
+              new webpack.DllReferencePlugin({
+                context: libContext,
+                manifest: require(path.join(libContext, `${lib.name}-manifest.json`))
+              })
+            )
           })
-        )
+        } else {
+          webpackConf.plugins.push(
+            new webpack.DllReferencePlugin({
+              context: libContext,
+              manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
+            })
+          )
+        }
         if (libContext) {
           vendorFiles = fs.readdirSync(libContext).map(file => {
             if (/dll\.js$/.test(file)) {
@@ -129,6 +146,9 @@ function buildCore (conf, options) {
           for (const mod in htmlPages) {
             for (const page in htmlPages[mod]) {
               const pageItem = htmlPages[mod][page]
+              console.log(pageItem)
+              console.log(vendorFiles)
+
               webpackConf.plugins.push(new HtmlWebpackPlugin({
                 filename: `${mod}/${pageItem.filename}`,
                 template: pageItem.filepath,
@@ -173,12 +193,23 @@ function buildCore (conf, options) {
     })
   } else {
     if (library && !isEmptyObject(library)) {
-      webpackConf.plugins.push(
-        new webpack.DllReferencePlugin({
-          context: libContext,
-          manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
+      if (library instanceof Array) {
+        library.forEach((lib, idx) => {
+          webpackConf.plugins.push(
+            new webpack.DllReferencePlugin({
+              context: libContext,
+              manifest: require(path.join(libContext, `${lib.name}-manifest.json`))
+            })
+          )
         })
-      )
+      } else {
+        webpackConf.plugins.push(
+          new webpack.DllReferencePlugin({
+            context: libContext,
+            manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
+          })
+        )
+      }
     }
     if (libContext) {
       vendorFiles = fs.readdirSync(libContext).map(file => {
