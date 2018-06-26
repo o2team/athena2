@@ -340,6 +340,40 @@ module.exports = {
 
 
 ### 其他功能
+#### dll配置
+开放dll配置单独打包库文件，减少打包时间
+```
+// config/index.js
+// 单个dll
+library: {
+  name: 'xxx', // 必填
+  directory: 'xxx',
+  libs: ['A', 'B']
+}
+// 多个dll
+library: [{
+  name: 'xxx', // 必填
+  directory: 'xxx',
+  libs: ['A', 'B']
+},
+{
+  name: 'xxx', // 必填
+  directory: 'xxx',
+  libs: ['C', 'D']
+}]
+```
+另外需要在模板html文件下插入dll的引用（也可以打包完成后手动插入）
+```
+// xxx.html
+...
+<body><body>
+...
+<% if (htmlWebpackPlugin.options.vendorFiles) {
+  for (let i = 0; i < htmlWebpackPlugin.options.vendorFiles.length; ++i) { %>
+    <script src="<%= htmlWebpackPlugin.options.vendorFiles[i] %>"></script>
+<% }} %>
+...
+```
 #### 图片压缩
 图片压缩功能主要在打包时应用，H5应用默认开启该项功能
 ```
