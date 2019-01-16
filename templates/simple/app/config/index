@@ -11,11 +11,27 @@ const config = {
   // define global constants for application see https://webpack.js.org/plugins/define-plugin/
   defineConstants: {
   },
+  // 项目是否为发布到通天塔上（此项为true的话，会忽略上面的staticDirectory，而生成固定的打包结构）
+  isPublishByBabel: false,
+  // 是否在 html 中插入脚本自动计算 html 的 font-size，用于 rem 适配
+  enableREM: false,
+  // 计算 rem 的基数，通常不用修改
+  baseSize: 10,
   // support functions
   module: {
     postcss: {
       // autoprefixer plugin config
       autoprefixer: {
+        enable: true
+      },
+      // 是否将 css 中的 px 转换为rem
+      // rootValue 为转换的值，通常等于 (设计稿宽度 / 上述配置的baseSize)
+      pxtorem: {
+        enable: false,
+        rootValue: 75
+      },
+      // 是否自动获取图片的宽高
+      assets: {
         enable: true
       }
     }

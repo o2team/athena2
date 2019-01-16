@@ -311,9 +311,9 @@ module.exports = {
     /* Input */
     .comment { background: url(img/icon/ico-comment.png) no-repeat 0 0; }
     .bubble { background: url(img/icon/ico-bubble.png) no-repeat 0 0; }
-
+    
     /* ---------------- */
-
+    
     /* Output */
     .comment { background-image: url(img/sprite.icon.png); background-position: 0 0; }
     .bubble { background-image: url(img/sprite.icon.png); background-position: 0 -50px; }
@@ -338,8 +338,28 @@ module.exports = {
 
 *更多配置参数详见：https://github.com/2createStudio/postcss-sprites*
 
-
 ### 其他功能
+
+#### 发布到通天塔
+
+单页应用中，新增了是否发布到通天塔及 REM 页面转换配置（H5模板默认是打包为通天塔目录结构）
+
+```
+// config/index.js
+module.exports = {
+  ...
+  // 项目是否为发布到通天塔上（此项为true的话，会忽略上面的staticDirectory，而生成固定的打包结构）
+  isPublishByBabel: false,
+  // 是否在 html 中插入脚本自动计算 html 的 font-size，用于 rem 适配
+  enableREM: false,
+  // 计算 rem 的基数，通常不用修改
+  baseSize: 10
+  ...
+}
+```
+
+开启后，会打包生成具有特定目录的应用，从而上传发布到通天塔上
+
 #### dll配置
 开放dll配置单独打包库文件，减少打包时间
 ```

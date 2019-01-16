@@ -11,6 +11,7 @@ const { isEmptyObject } = require('../util')
 const plugins = []
 
 exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', template = 'complete') {
+  const isPublishByBabel = buildConfig.isPublishByBabel
   const useModuleConf = buildConfig.module || {}
   const customPostcssConf = useModuleConf.postcss || {}
   const customPlugins = customPostcssConf.plugins || []
@@ -29,7 +30,7 @@ exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', templat
 
   const customSpritesConf = customPostcssConf.sprites || {}
   if (customSpritesConf.enable) {
-    const spritePath = template === 'h5' ? 'dist/img/' : 'dist/static/images/'
+    const spritePath = (template === 'h5' || isPublishByBabel) ? 'dist/img/' : 'dist/static/images/'
     const preSpritesConf = {
       spritePath: spritePath,
       retina: true,
@@ -41,7 +42,7 @@ exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', templat
       verbose: false,
       // 将 img 目录下的子目录作为分组，子目录下的 png 图片会合成雪碧图
       groupBy: function (image) {
-        const reg = template === 'h5'
+        const reg = (template === 'h5' || isPublishByBabel)
           ? /img\/(\S+)\/\S+\.png$/.exec(image.url)
           : /images\/(\S+)\/\S+\.png$/.exec(image.url)
         const groupName = reg ? reg[1] : reg
@@ -60,7 +61,7 @@ exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', templat
       },
       // 非 img 子目录下面的 png 不合
       filterBy: function (image) {
-        const reg = template === 'h5'
+        const reg = (template === 'h5' || isPublishByBabel)
           ? /img\/(\S+)\/\S+\.png$/.test(image.url)
           : /images\/(\S+)\/\S+\.png$/.test(image.url)
         return reg ? Promise.resolve() : Promise.reject(new Error(`The image ${image.url} is incorrect.`))

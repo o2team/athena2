@@ -63,6 +63,9 @@ function buildCore (conf, options) {
     const h5TemplateConf = require('../config/h5_template.conf')(webpack, buildConfig)
     const h5TemplateWebpackConf = webpackMerge(h5TemplateConf.BASE, h5TemplateConf.PROD)
     customWebpackConf = webpackMerge(h5TemplateWebpackConf, buildConfig.webpack)
+  } else if (template === 'simple') {
+    const simpleTplConf = require('../config/simple_template.conf')(buildConfig)
+    customWebpackConf = webpackMerge(simpleTplConf, buildConfig.webpack)
   } else {
     customWebpackConf = buildConfig.webpack
   }
