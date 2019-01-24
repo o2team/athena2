@@ -1,11 +1,12 @@
 const webpack = require('webpack')
-const NpmInstallPlugin = require('npm-install-webpack-plugin')
+// const NpmInstallPlugin = require('npm-install-webpack-plugin')
 
 const { getPostcssPlugins } = require('./postcss.conf')
-const { shouldUseCnpm } = require('../util')
+// const { shouldUseCnpm } = require('../util')
 
-module.exports = function (appPath, buildConfig, template, platform, framework) {
+module.exports = function (appPath, buildConfig, template, platform) {
   return {
+    mode: 'development',
     devtool: 'cheap-module-eval-source-map',
     module: {
       rules: [
@@ -36,14 +37,16 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       ]
     },
     plugins: [
-      new NpmInstallPlugin({
-        dev: false,
-        peerDependencies: true,
-        quiet: false,
-        npm: shouldUseCnpm() ? 'cnpm' : 'npm'
-      }),
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.NoEmitOnErrorsPlugin()
-    ]
+      // new NpmInstallPlugin({
+      //   dev: false,
+      //   peerDependencies: true,
+      //   quiet: false,
+      //   npm: shouldUseCnpm() ? 'cnpm' : 'npm'
+      // }),
+      new webpack.HotModuleReplacementPlugin()
+    ],
+    optimization: {
+      noEmitOnErrors: true
+    }
   }
 }

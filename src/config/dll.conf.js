@@ -1,9 +1,24 @@
 const path = require('path')
 const webpack = require('webpack')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
-module.exports = function (contextPath, buildConfig, libConfig) {
-  const { env = {}, defineConstants = {} } = buildConfig
+module.exports = function (contextPath, buildConfig, libConfig, platform) {
+  const { defineConstants = {}, sourceMap } = buildConfig
   const entry = {}
+  const defaultJSCompressConf = {
+    keep_fnames: true,
+    output: {
+      comments: false,
+      keep_quoted_props: true,
+      quote_keys: true,
+      beautify: false
+    },
+    warnings: false
+  }
+  const compress = Object.assign({}, {
+    js: defaultJSCompressConf
+  }, buildConfig.module.compress)
+
   if (libConfig instanceof Array) {
     libConfig.forEach((lib, idx) => {
       entry[lib.name] = lib.libs
@@ -14,6 +29,7 @@ module.exports = function (contextPath, buildConfig, libConfig) {
   }
 
   return {
+    mode: 'production',
     entry,
     module: {
       rules: [
@@ -33,33 +49,25 @@ module.exports = function (contextPath, buildConfig, libConfig) {
       library: `$[name]_library`
     },
     plugins: [
-      new webpack.optimize.UglifyJsPlugin({
-        beautify: false,
-        mangle: {
-          screw_ie8: false,
-          keep_fnames: true,
-          properties: false,
-          keep_quoted: true
-        },
-        compress: {
-          warnings: false,
-          screw_ie8: false,
-          properties: false
-        },
-        output: {
-          keep_quoted_props: true
-        },
-        comments: false
-      }),
-      new webpack.DefinePlugin(Object.assign({
-        'process.env': env
-      }, defineConstants)),
+      new webpack.DefinePlugin(defineConstants),
 
       new webpack.DllPlugin({
         path: path.join(contextPath, `[name]-manifest.json`),
         name: `[name]_library`,
         context: contextPath
       })
-    ]
+    ],
+    optimization: {
+      minimizer: [
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap,
+          uglifyOptions: Object.assign({}, {
+            ie8: platform === 'pc'
+          }, compress.js)
+        })
+      ]
+    }
   }
 }

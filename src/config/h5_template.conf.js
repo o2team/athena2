@@ -123,14 +123,42 @@ const createFragment = function (buildConfig) {
   }
 
   HeadJavascriptInjectPlugin.prototype.apply = function (compiler) {
-    compiler.plugin('compilation', function (compilation) {
-      compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
-        let html = htmlPluginData.html
-        html = html.replace('{{{__HEAD_JAVASCRIPT__}}}', headJavascript)
-        htmlPluginData.html = html
-        callback(null, htmlPluginData)
+    if (compiler.hooks) {
+      // webpack 4 支持
+      compiler.hooks.compilation.tap('headJavascriptInject', (compilation) => {
+        if (compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing) {
+          compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
+            'headJavascriptInject',
+            (htmlPluginData, callback) => {
+              let html = htmlPluginData.html
+              html = html.replace('{{{__HEAD_JAVASCRIPT__}}}', headJavascript)
+              htmlPluginData.html = html
+              callback(null, htmlPluginData)
+            })
+        } else {
+          // HtmlWebPackPlugin 4.x 版本，目前还是beta，已防万一，也兼容它
+          const HtmlWebpackPlugin = require('html-webpack-plugin')
+          HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tapAsync(
+            'headJavascriptInject',
+            (htmlPluginData, callback) => {
+              let html = htmlPluginData.html
+              html = html.replace('{{{__HEAD_JAVASCRIPT__}}}', headJavascript)
+              htmlPluginData.html = html
+              callback(null, htmlPluginData)
+            }
+          )
+        }
       })
-    })
+    } else {
+      compiler.plugin('compilation', function (compilation) {
+        compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
+          let html = htmlPluginData.html
+          html = html.replace('{{{__HEAD_JAVASCRIPT__}}}', headJavascript)
+          htmlPluginData.html = html
+          callback(null, htmlPluginData)
+        })
+      })
+    }
   }
 
   return HeadJavascriptInjectPlugin

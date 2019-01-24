@@ -142,12 +142,12 @@ function serveCore (conf, options, sample) {
     }
   })
   let isFirstCompile = true
-  compiler.plugin('invalid', filepath => {
+  compiler.hooks.invalid.tap('invalid', filepath => {
     console.log(chalk.grey(`[${formatTime()}]Modified: ${filepath}`))
     serveSpinner.text = 'Compiling...🤡~'
     serveSpinner.render()
   })
-  compiler.plugin('done', stats => {
+  compiler.hooks.done.tap('done', stats => {
     const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
     const isSuccess = !errors.length && !warnings.length
     if (isSuccess) {

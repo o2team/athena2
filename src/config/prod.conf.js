@@ -1,16 +1,19 @@
 const path = require('path')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+// const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
-const { isEmptyObject } = require('../util')
+// const { isEmptyObject } = require('../util')
 
 const { getPostcssPlugins } = require('./postcss.conf')
 
-module.exports = function (appPath, buildConfig, template, platform, framework) {
-  const { sourceMap, output = {}, sourceRoot, outputRoot, library } = buildConfig
-  const outputCSS = output.css || {}
+module.exports = function (appPath, buildConfig, template, platform) {
+  const { sourceMap, outputRoot, library } = buildConfig
+  // const {output = {}, sourceRoot } = buildConfig
+  // const outputCSS = output.css || {}
   const cssLoaders = []
   const cssExtractPlugins = []
   const devtool = template === 'h5' ? '' : 'hidden-source-map'
@@ -38,99 +41,93 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     js: defaultJSCompressConf
   }, buildConfig.module.compress)
 
-  if (outputCSS && !isEmptyObject(outputCSS)) {
-    for (const key in outputCSS) {
-      const extractFile = new ExtractTextPlugin(key)
-      const include = (outputCSS[key] || []).map(item => path.join(appPath, sourceRoot, item))
-      cssLoaders.push({
-        test: /\.(css|scss|sass)(\?.*)?$/,
-        include,
-        loader: extractFile.extract({
-          fallback: require.resolve('style-loader'),
-          use: [
-            {
-              loader: require.resolve('css-loader'),
-              options: {
-                importLoaders: 1,
-                minimize: true,
-                sourceMap
-              }
-            },
-            {
-              loader: require.resolve('postcss-loader'),
-              options: {
-                ident: 'postcss',
-                plugins: () => getPostcssPlugins(buildConfig, platform, template)
-              }
-            },
-            require.resolve('sass-loader')
-          ]
-        })
-      })
-      cssExtractPlugins.push(extractFile)
-    }
-    cssLoaders.push({
-      test: /\.(css|scss|sass)(\?.*)?$/,
-      use: [
-        require.resolve('style-loader'),
-        {
-          loader: require.resolve('css-loader'),
-          options: {
-            importLoaders: 1
-          }
-        },
-        {
-          loader: require.resolve('postcss-loader'),
-          options: {
-            ident: 'postcss',
-            plugins: () => getPostcssPlugins(buildConfig, platform, template)
-          }
-        },
-        require.resolve('sass-loader')
-      ]
-    })
-  } else {
-    cssLoaders.push({
-      test: /\.(css|scss|sass)(\?.*)?$/,
-      loader: ExtractTextPlugin.extract({
-        fallback: require.resolve('style-loader'),
-        use: [
-          {
-            loader: require.resolve('css-loader'),
-            options: {
-              importLoaders: 1,
-              minimize: compress.css,
-              sourceMap
-            }
-          },
-          {
-            loader: require.resolve('postcss-loader'),
-            options: {
-              ident: 'postcss',
-              plugins: () => getPostcssPlugins(buildConfig, platform, template)
-            }
-          },
-          require.resolve('sass-loader')
-        ]
-      })
-    })
-    cssExtractPlugins.push(new ExtractTextPlugin({
-      filename: 'css/[name].css'
-    }))
-  }
+  // webpack4 中 MiniCssExtractPlugin 插件不支持单独打包抽离生成多个css文件
+  // 详情看这个issue https://github.com/webpack-contrib/mini-css-extract-plugin/issues/45
+  // issue中提到可以用 webpack4 的 splitChunks 做到这个效果
+  // todo...
+
+  // if (outputCSS && !isEmptyObject(outputCSS)) {
+  //   for (const key in outputCSS) {
+  //     const extractFile = new ExtractTextPlugin(key)
+  //     const include = (outputCSS[key] || []).map(item => path.join(appPath, sourceRoot, item))
+  //     cssLoaders.push({
+  //       test: /\.(css|scss|sass)(\?.*)?$/,
+  //       include,
+  //       loader: extractFile.extract({
+  //         fallback: require.resolve('style-loader'),
+  //         use: [
+  //           {
+  //             loader: require.resolve('css-loader'),
+  //             options: {
+  //               importLoaders: 1,
+  //               minimize: true,
+  //               sourceMap
+  //             }
+  //           },
+  //           {
+  //             loader: require.resolve('postcss-loader'),
+  //             options: {
+  //               ident: 'postcss',
+  //               plugins: () => getPostcssPlugins(buildConfig, platform, template)
+  //             }
+  //           },
+  //           require.resolve('sass-loader')
+  //         ]
+  //       })
+  //     })
+  //     cssExtractPlugins.push(extractFile)
+  //   }
+  //   cssLoaders.push({
+  //     test: /\.(css|scss|sass)(\?.*)?$/,
+  //     use: [
+  //       require.resolve('style-loader'),
+  //       {
+  //         loader: require.resolve('css-loader'),
+  //         options: {
+  //           importLoaders: 1
+  //         }
+  //       },
+  //       {
+  //         loader: require.resolve('postcss-loader'),
+  //         options: {
+  //           ident: 'postcss',
+  //           plugins: () => getPostcssPlugins(buildConfig, platform, template)
+  //         }
+  //       },
+  //       require.resolve('sass-loader')
+  //     ]
+  //   })
+  // } else {
+
+  cssLoaders.push({
+    test: /\.(css|scss|sass)(\?.*)?$/,
+    use: [
+      MiniCssExtractPlugin.loader,
+      {
+        loader: require.resolve('css-loader'),
+        options: {
+          importLoaders: 1,
+          sourceMap
+        }
+      },
+      {
+        loader: require.resolve('postcss-loader'),
+        options: {
+          ident: 'postcss',
+          plugins: () => getPostcssPlugins(buildConfig, platform, template)
+        }
+      },
+      require.resolve('sass-loader')
+    ]
+  })
+  cssExtractPlugins.push(new MiniCssExtractPlugin({
+    filename: 'css/[name].css'
+  }))
 
   const plugins = [
     new CleanWebpackPlugin(path.join(appPath, outputRoot), {
       verbose: false,
       exclude: [library && library.directory ? library.directory : '']
-    }),
-    new UglifyJsPlugin({
-      cache: true,
-      parallel: true,
-      sourceMap,
-      uglifyOptions: Object.assign({}, {
-        ie8: platform === 'pc'
-      }, compress.js)
     }),
     ...cssExtractPlugins
   ]
@@ -144,6 +141,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
   }
 
   return {
+    mode: 'production',
     devtool: devtool,
     module: {
       rules: [
@@ -161,6 +159,19 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     resolve: {
       mainFields: ['main']
     },
-    plugins: plugins
+    plugins: plugins,
+    optimization: {
+      minimizer: [
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap,
+          uglifyOptions: Object.assign({}, {
+            ie8: platform === 'pc'
+          }, compress.js)
+        }),
+        new OptimizeCSSAssetsPlugin({})
+      ]
+    }
   }
 }

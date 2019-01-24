@@ -5,7 +5,7 @@ const Util = require('../util')
 const browserList = require('./browser_list')
 
 module.exports = function (appPath, buildConfig, template, platform, framework) {
-  const { env = {}, defineConstants = {}, staticDirectory, htmlSnippetDirectory = ['component'] } = buildConfig
+  const { defineConstants = {}, staticDirectory, htmlSnippetDirectory = ['component'] } = buildConfig
   let imgName, mediaName, fontName, extName
   const isPublishByBabel = buildConfig.isPublishByBabel
   const imgLimit = (buildConfig.module && buildConfig.module.base64 && buildConfig.module.base64.imageLimit) || 2000
@@ -78,21 +78,21 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     module: {
       rules: [
         {
+          test: /\.js|jsx$/,
+          exclude: /node_modules/,
+          use: jsConfUse
+        },
+        {
+          test: /\.html$/,
+          include: new RegExp(htmlSnippetDirectory.join('|')),
+          loader: require.resolve('html-loader')
+        },
+        {
+          test: /\.vue$/,
+          loader: require.resolve('vue-loader')
+        },
+        {
           oneOf: [
-            {
-              test: /\.js|jsx$/,
-              exclude: /node_modules/,
-              use: jsConfUse
-            },
-            {
-              test: /\.html$/,
-              include: new RegExp(htmlSnippetDirectory.join('|')),
-              loader: require.resolve('html-loader')
-            },
-            {
-              test: /\.vue$/,
-              loader: require.resolve('vue-loader')
-            },
             {
               test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
               loader: require.resolve('file-loader'),
@@ -117,7 +117,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               }
             },
             {
-              exclude: /\.js|\.css|\.scss|\.sass|\.html|\.json|\.ejs$/,
+              exclude: /\.js|\.jsx|\.vue|\.css|\.scss|\.sass|\.html|\.json|\.ejs$/,
               loader: require.resolve('url-loader'),
               options: {
                 limit: 2000,
@@ -141,9 +141,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
           attrs: ['img:src', 'link:href', 'data-src']
         }
       }),
-      new webpack.DefinePlugin(Object.assign({
-        'process.env': env
-      }, defineConstants))
+      new webpack.DefinePlugin(defineConstants)
     ]
   }
 }

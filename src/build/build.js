@@ -85,7 +85,7 @@ function buildCore (conf, options) {
 
       libContext = path.join(conf.appPath, outputRoot, libraryDir)
       fs.ensureDirSync(libContext)
-      const webpackDllConf = require('../config/dll.conf')(libContext, buildConfig, library)
+      const webpackDllConf = require('../config/dll.conf')(libContext, buildConfig, library, platform)
       dllWebpackCompiler = webpack(webpackDllConf)
     }
   }
@@ -257,7 +257,7 @@ function buildCompilerRun (compiler, buildSpinner, conf, options) {
     }
 
     const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
-    const isSuccess = !errors.length && !warnings.length
+    const isSuccess = !errors.length
     if (isSuccess) {
       buildSpinner.succeed(chalk.green('Compile successfully!\n'))
       process.stdout.write(stats.toString({
@@ -265,12 +265,12 @@ function buildCompilerRun (compiler, buildSpinner, conf, options) {
         modules: false,
         children: false,
         chunks: false,
-        chunkModules: false
+        chunkModules: false,
+        warnings: false
       }) + '\n')
       if (options.zip) {
         buildArchive(conf)
       }
-      return
     }
     if (errors.length) {
       errors.splice(1)
