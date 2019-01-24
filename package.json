@@ -1,6 +1,6 @@
 {
   "name": "@o2team/athena2",
-  "version": "0.0.16-alpha.18",
+  "version": "0.0.16-alpha",
   "description": "A build tool for front end",
   "main": "index.js",
   "scripts": {

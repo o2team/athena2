@@ -6,7 +6,7 @@ Athena2
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/o2team/athena/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/o2team/athena2.svg?style=flat-square)](https://github.com/o2team/athena/stargazers)
 
-> O2Team构建项目流程工具，基于[Webpack3](https://webpack.js.org/)打包，提供多页、单页、H5三种模板选择，支持Nerv、React、Vue三大框架编译。
+> O2Team构建项目流程工具，基于[Webpack4](https://webpack.js.org/)打包，提供多页、单页、H5三种模板选择，支持Nerv、React、Vue三大框架编译。
 >
 > 一次安装，到处运行
 
