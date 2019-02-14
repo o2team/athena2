@@ -2,8 +2,10 @@
   "name": "<%= appName %>",
   "version": "0.0.1",
   "private": true,
-  "dependencies": {<% if (framework === 'nerv') { %>
-    "nervjs": "^1.2.8"<% } else if (framework === 'react') { %>
+  "dependencies": { <% if (framework === 'nerv') { %>
+    "nervjs": "^1.2.8"<% } else if (framework === 'react') { %> <% if (typescript) { %>
+    "@types/react": "^16.7.20",
+    "@types/react-dom": "^16.0.11", <% } %>
     "react": "^16.2.0",
     "react-dom": "^16.2.0"<% } else if (framework === 'vue') { %>
     "vue": "^2.5.13",

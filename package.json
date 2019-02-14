@@ -36,6 +36,7 @@
   "dependencies": {
     "archiver": "2.1.0",
     "autoprefixer": "7.1.4",
+    "awesome-typescript-loader": "5.2.1",
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",
     "babel-plugin-syntax-dynamic-import": "6.18.0",
@@ -103,6 +104,7 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "husky": "^0.14.3",
-    "lint-staged": "^6.0.0"
+    "lint-staged": "^6.0.0",
+    "typescript": "^3.3.3"
   }
 }

@@ -40,7 +40,7 @@ function downloadTemplate (creater, params, helper, cb) {
 }
 
 function copyFiles (creater, params, helper, cb) {
-  const { appName, appId, description, template, date, platform, h5 } = params
+  const { appName, appId, description, template, date, platform, h5, typescript } = params
   const sourceRootDir = 'src'
   const sourceRootPath = path.join(appName, sourceRootDir)
   // create app dir
@@ -79,7 +79,9 @@ function copyFiles (creater, params, helper, cb) {
       date,
       description
     })
-    creater.template(template, 'app', 'jsconfigjson', path.join(appName, 'jsconfig.json'))
+    typescript
+      ? creater.template(template, 'app', 'tsconfigjson', path.join(appName, 'tsconfig.json'))
+      : creater.template(template, 'app', 'jsconfigjson', path.join(appName, 'jsconfig.json'))
     creater.template(template, 'app', 'app-conf', path.join(appName, 'app.conf.js'), {
       appName,
       appId,
@@ -87,7 +89,8 @@ function copyFiles (creater, params, helper, cb) {
       description,
       template,
       h5,
-      date
+      date,
+      typescript
     })
 
     creater.fs.commit(() => {

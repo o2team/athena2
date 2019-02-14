@@ -4,7 +4,7 @@ const webpack = require('webpack')
 const { getPostcssPlugins } = require('./postcss.conf')
 // const { shouldUseCnpm } = require('../util')
 
-module.exports = function (appPath, buildConfig, template, platform) {
+module.exports = function (appPath, buildConfig, template, platform, framework) {
   return {
     mode: 'development',
     devtool: 'cheap-module-eval-source-map',

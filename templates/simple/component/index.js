@@ -1,22 +1,19 @@
-var _ = require('lodash')
 const fs = require('fs-extra')
 const path = require('path')
 const chalk = require('chalk')
-const shelljs = require('shelljs')
-const ora = require('ora')
-const uuid = require('uuid')
 
 module.exports = function create (creater, params, helper, cb) {
-  const { appName, template, framework, componentName, description, date, sass } = params
+  const { template, framework, componentName, description, date, sass, typescript } = params
   // create component dir
   const componentDir = 'src/component'
   const componentCss = sass ? `${componentName}.scss` : `${componentName}.css`
+  const suffix = typescript ? 'tsx' : 'js'
 
   fs.mkdirpSync(path.join(componentDir, componentName))
 
   // copy files
   if (framework !== 'vue') {
-    creater.template(template, `component/${framework}`, 'component.js', path.join(componentDir, componentName, `${componentName}.js`), {
+    creater.template(template, `component/${framework}`, typescript ? 'component.ts' : 'component.js', path.join(componentDir, componentName, `${componentName}.${suffix}`), {
       date,
       description,
       componentName,
@@ -35,7 +32,7 @@ module.exports = function create (creater, params, helper, cb) {
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created component: ${chalk.grey.bold(componentName)}`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created directory: ${componentDir}/${componentName}`)}`)
     if (framework !== 'vue') {
-      console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${componentDir}/${componentName}/${componentName}.js`)}`)
+      console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${componentDir}/${componentName}/${componentName}.${suffix}`)}`)
       console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${componentDir}/${componentName}/${componentCss}`)}`)
     } else {
       console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${componentDir}/${componentName}/${componentName}.vue`)}`)

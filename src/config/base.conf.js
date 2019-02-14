@@ -78,11 +78,6 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     module: {
       rules: [
         {
-          test: /\.js|jsx$/,
-          exclude: /node_modules/,
-          use: jsConfUse
-        },
-        {
           test: /\.html$/,
           include: new RegExp(htmlSnippetDirectory.join('|')),
           loader: require.resolve('html-loader')
@@ -93,6 +88,16 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
         },
         {
           oneOf: [
+            {
+              test: /\.js|jsx$/,
+              exclude: /node_modules/,
+              use: jsConfUse
+            },
+            {
+              test: /\.ts|tsx$/,
+              exclude: /node_modules/,
+              loader: require.resolve('awesome-typescript-loader')
+            },
             {
               test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
               loader: require.resolve('file-loader'),
@@ -117,7 +122,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
               }
             },
             {
-              exclude: /\.js|\.jsx|\.vue|\.css|\.scss|\.sass|\.html|\.json|\.ejs$/,
+              exclude: /\.ts|\.tsx|\.js|\.jsx|\.vue|\.css|\.scss|\.sass|\.html|\.json|\.ejs$/,
               loader: require.resolve('url-loader'),
               options: {
                 limit: 2000,
@@ -130,6 +135,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     },
     resolve: {
       modules: [path.join(Util.getRootPath(), 'node_modules'), 'node_modules'],
+      extensions: ['.tsx', '.ts', '.js', '.jsx'],
       alias: alias
     },
     resolveLoader: {

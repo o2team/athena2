@@ -21,7 +21,8 @@ class App extends CreateBase {
       framework: null,
       template: null,
       platform: null,
-      sass: false
+      sass: false,
+      typescript: false
     }, options)
   }
 
@@ -175,6 +176,13 @@ class App extends CreateBase {
       name: 'Vue',
       value: 'vue'
     }]
+    if (template !== 'complete') {
+      newPrompts.push({
+        type: 'confirm',
+        name: 'typescript',
+        message: 'Do you wanna use typescript?'
+      })
+    }
     if (template === 'h5') {
       conf.framework = 'base'
       if (typeof conf.h5 !== 'string') {

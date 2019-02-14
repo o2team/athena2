@@ -86,7 +86,21 @@ exports.getEntry = function ({ appConf, appPath, moduleList = [], buildConfig = 
       })
     })
   } else {
-    const simpleEntry = path.join(appPath, sourceRoot, 'index.js')
+    const { typescript, templete, framework } = appConf
+    let simpleEntry
+    if (!typescript || framework === 'vue') {
+      simpleEntry = path.join(appPath, sourceRoot, 'index.js')
+    } else {
+      if (templete === 'h5') {
+        simpleEntry = path.join(appPath, sourceRoot, 'index.ts')
+        // 对于h5模板做一层容错
+        if (!fs.existsSync(simpleEntry)) {
+          simpleEntry = path.join(appPath, sourceRoot, 'index.js')
+        }
+      } else {
+        simpleEntry = path.join(appPath, sourceRoot, 'index.tsx')
+      }
+    }
     if (fs.existsSync(simpleEntry)) entry['index'] = new Array(simpleEntry)
   }
 

@@ -6,5 +6,6 @@ module.exports = {
   template: '<%= template %>',
   platform: '<%= platform %>',
   framework: '<%= framework %>',
-  sass: '<%= sass %>'
+  sass: '<%= sass %>',
+  typescript: '<%= typescript %>'
 }

@@ -7,6 +7,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import '<% if (sass) { %>./<%= global %>.scss<% } else { %><%= global %>.css<%}%>'
+
 class App extends React.Component {
   constructor () {
     super(...arguments)

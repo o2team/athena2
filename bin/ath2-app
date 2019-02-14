@@ -13,6 +13,7 @@ program
   .option('--template [templateName]', 'Set template to use')
   .option('--h5 [h5TplName]', 'Set H5 template to use')
   .option('--sass', 'Use Sass')
+  .option('--typescript', 'Use Typescript')
   .option('--debug', 'Debug info')
   .parse(process.argv)
 
@@ -21,7 +22,7 @@ const args = program.args
 const appName = args[0] || program.name
 
 const description = program.description || ''
-const { framework, template, platform, sass, h5 } = program
+const { framework, template, platform, sass, h5, typescript } = program
 
 const app = new App({
   appName,
@@ -30,7 +31,8 @@ const app = new App({
   template,
   platform,
   sass,
-  h5
+  h5,
+  typescript
 })
 
 app.create()

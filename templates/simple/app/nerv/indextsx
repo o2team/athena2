@@ -1,0 +1,28 @@
+/**
+ * @author <%= username %>
+ * @date <%= date %>
+ * @desc <%= description %>
+ */
+
+import Nerv from 'nervjs'
+
+import '<% if (sass) { %>./global.scss<% } else { %>global.css<%}%>'
+
+class App extends Nerv.Component<Object, Object> {
+  constructor (props) {
+    super(props)
+    this.state = {}
+  }
+
+  render () {
+    return (
+      <div className='app'>
+      </div>
+    )
+  }
+}
+
+Nerv.render(
+  <App />,
+  document.getElementById('J_container') as HTMLElement
+)

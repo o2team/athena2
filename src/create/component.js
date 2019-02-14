@@ -13,6 +13,7 @@ class Component extends CreateBase {
       template: null,
       framework: null,
       componentName: null,
+      typescript: false,
       description: ''
     }, options)
   }

@@ -6,6 +6,8 @@
 
 import Nerv from 'nervjs'
 
+import '<% if (sass) { %>./<%= global %>.scss<% } else { %><%= global %>.css<%}%>'
+
 class App extends Nerv.Component {
   constructor () {
     super(...arguments)

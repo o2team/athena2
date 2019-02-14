@@ -5,12 +5,13 @@ const shelljs = require('shelljs')
 const ora = require('ora')
 
 module.exports = function create (creater, params, helper, cb) {
-  const { appName, appId, description, framework, template, date, platform, sass } = params
+  const { appName, appId, description, framework, template, date, platform, sass, typescript } = params
   const sourceRootDir = 'src'
   const configDir = 'config'
   const configDirPath = path.join(appName, configDir)
   const sourceRootPath = path.join(appName, sourceRootDir)
   const globalCss = sass ? 'global.scss' : 'global.css'
+  const suffix = typescript ? 'tsx' : 'js'
   // create app dir
   fs.mkdirpSync(appName)
   fs.mkdirpSync(sourceRootPath)
@@ -18,13 +19,19 @@ module.exports = function create (creater, params, helper, cb) {
 
   // copy files
   creater.template(template, 'app', 'indexhtml', path.join(sourceRootPath, 'index.html'), { appName })
-  creater.template(template, `app/${framework}`, 'index', path.join(sourceRootPath, 'index.js'), {
-    description,
-    date
-  })
   if (framework === 'vue') {
+    creater.template(template, `app/${framework}`, 'index', path.join(sourceRootPath, 'index.js'), {
+      description,
+      date,
+      sass
+    })
     creater.template(template, 'app/vue', 'app', path.join(sourceRootPath, 'app.vue'), { sass })
   } else {
+    creater.template(template, `app/${framework}`, typescript ? 'indextsx' : 'index', path.join(sourceRootPath, `index.${suffix}`), {
+      description,
+      date,
+      sass
+    })
     creater.template(template, 'app', 'globalcss', path.join(sourceRootPath, globalCss))
   }
   creater.template(template, 'app', path.join(configDir, 'index'), path.join(configDirPath, 'index.js'))
@@ -40,9 +47,12 @@ module.exports = function create (creater, params, helper, cb) {
   creater.template(template, 'app', 'packagejson', path.join(appName, 'package.json'), {
     appName,
     framework,
-    date
+    date,
+    typescript
   })
-  creater.template(template, 'app', 'jsconfigjson', path.join(appName, 'jsconfig.json'))
+  typescript
+    ? creater.template(template, 'app', 'tsconfigjson', path.join(appName, 'tsconfig.json'))
+    : creater.template(template, 'app', 'jsconfigjson', path.join(appName, 'jsconfig.json'))
   creater.template(template, 'app', 'app-conf', path.join(appName, 'app.conf.js'), {
     appName,
     appId,
@@ -51,7 +61,8 @@ module.exports = function create (creater, params, helper, cb) {
     framework,
     template,
     date,
-    sass
+    sass,
+    typescript
   })
 
   creater.fs.commit(() => {
@@ -65,13 +76,14 @@ module.exports = function create (creater, params, helper, cb) {
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.gitignore`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/.eslintrc.js`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/package.json`)}`)
-    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/jsconfig.json`)}`)
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/${typescript ? 'ts' : 'js'}config.json`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/app.conf.js`)}`)
     console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/index.html`)}`)
-    console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/index.js`)}`)
     if (framework === 'vue') {
+      console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/index.js`)}`)
       console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/app.vue`)}`)
     } else {
+      console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/index.${suffix}`)}`)
       console.log(`${chalk.green('✔ ')}${chalk.grey(`Created file: ${appName}/${globalCss}`)}`)
     }
     console.log()

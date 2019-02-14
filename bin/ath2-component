@@ -38,6 +38,7 @@ const appName = appConf.app
 const template = appConf.template
 const framework = appConf.framework
 const sass = appConf.sass
+const typescript = appConf.typescript
 
 const component = new Component({
   appName,
@@ -45,7 +46,8 @@ const component = new Component({
   framework,
   componentName,
   description,
-  sass
+  sass,
+  typescript
 })
 
 component.create()
