@@ -86,12 +86,12 @@ exports.getEntry = function ({ appConf, appPath, moduleList = [], buildConfig = 
       })
     })
   } else {
-    const { typescript, templete, framework } = appConf
+    const { typescript, template, framework } = appConf
     let simpleEntry
     if (!typescript || framework === 'vue') {
       simpleEntry = path.join(appPath, sourceRoot, 'index.js')
     } else {
-      if (templete === 'h5') {
+      if (template === 'h5') {
         simpleEntry = path.join(appPath, sourceRoot, 'index.ts')
         // 对于h5模板做一层容错
         if (!fs.existsSync(simpleEntry)) {

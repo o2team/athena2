@@ -17,8 +17,7 @@
     "baseUrl": ".",
     "rootDir": ".",
     "jsx": "react",
-    "lib": ["es2015", "esnext", "dom", "scripthost"], <% if (framework === "nerv") { %>
-    "jsxFactory": "Nerv.createElement", <% } %>
+    "lib": ["es2015", "esnext", "dom", "scripthost"],
     "allowJs": true,
     "typeRoots": [
       "node_modules/@types"

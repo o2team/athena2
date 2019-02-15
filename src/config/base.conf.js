@@ -69,11 +69,11 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     : {
       '@APP': appPath
     }
-  if (template !== 'h5' && framework !== 'nerv') {
-    jsConfUse.push({
-      loader: require.resolve('hot-module-accept')
-    })
-  }
+  // if (template !== 'h5' && framework !== 'nerv') {
+  //   jsConfUse.push({
+  //     loader: require.resolve('hot-module-accept')
+  //   })
+  // }
   return {
     module: {
       rules: [
