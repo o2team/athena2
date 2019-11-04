@@ -39,7 +39,7 @@ module.exports = function build (args, options) {
 }
 
 function buildCore (conf, options) {
-  const buildSpinner = ora(`Starting build, please wait🤡~`).start()
+  const buildSpinner = ora('Starting build, please wait🤡~').start()
   const appConf = conf.appConf
   const buildConfig = getAppBuildConfig(conf.appPath)
   const {
@@ -66,21 +66,6 @@ function buildCore (conf, options) {
   } else {
     customWebpackConf = buildConfig.webpack
   }
-  let dllWebpackCompiler
-  let libContext
-  const library = buildConfig.library
-  let vendorFiles = []
-  let libraryDir
-  if (conf.buildType === BUILD_APP) {
-    if (library && !isEmptyObject(library)) {
-      libraryDir = library.directory || 'lib'
-      libContext = path.join(conf.appPath, outputRoot, libraryDir)
-      fs.ensureDirSync(libContext)
-      const webpackDllConf = require('../config/dll.conf')(libContext, buildConfig, library)
-      dllWebpackCompiler = webpack(webpackDllConf)
-    }
-  }
-  buildConfig.library = library
   const webpackBaseConf = require('../config/base.conf')(conf.appPath, buildConfig, template, platform, framework)
   const webpackProdConf = require('../config/prod.conf')(conf.appPath, buildConfig, template, platform, framework)
   let webpackConf = webpackMerge(webpackBaseConf, webpackProdConf)
@@ -103,117 +88,29 @@ function buildCore (conf, options) {
       }
     }))
   }
-  if (dllWebpackCompiler) {
-    dllWebpackCompiler.run((err, stats) => {
-      if (err) {
-        return printBuildError(err)
+  if (appConf.template === 'complete') {
+    for (const mod in htmlPages) {
+      for (const page in htmlPages[mod]) {
+        const pageItem = htmlPages[mod][page]
+        webpackConf.plugins.push(new HtmlWebpackPlugin({
+          filename: `${mod}/${pageItem.filename}`,
+          template: pageItem.filepath,
+          alwaysWriteToDisk: true,
+          chunks: [`${mod}/${page}`]
+        }))
       }
-      const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
-      const isSuccess = !errors.length && !warnings.length
-      if (isSuccess) {
-        webpackConf.plugins.push(
-          new webpack.DllReferencePlugin({
-            context: libContext,
-            manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
-          })
-        )
-        if (libContext) {
-          vendorFiles = fs.readdirSync(libContext).map(file => {
-            if (/dll\.js$/.test(file)) {
-              return `${publicPath}${urlJoin(libraryDir, file)}`
-            }
-            return null
-          }).filter(Boolean)
-        }
-        if (appConf.template === 'complete') {
-          for (const mod in htmlPages) {
-            for (const page in htmlPages[mod]) {
-              const pageItem = htmlPages[mod][page]
-              webpackConf.plugins.push(new HtmlWebpackPlugin({
-                filename: `${mod}/${pageItem.filename}`,
-                template: pageItem.filepath,
-                alwaysWriteToDisk: true,
-                chunks: [`${mod}/${page}`],
-                vendorFiles
-              }))
-            }
-          }
-        } else {
-          webpackConf.plugins.push(new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: htmlPages['index'],
-            alwaysWriteToDisk: true,
-            chunks: 'index.js',
-            vendorFiles
-          }))
-        }
-        webpackConf = webpackMerge(webpackConf, customWebpackConf)
-        const compiler = createCompiler(webpack, webpackConf)
-        return buildCompilerRun(compiler, buildSpinner, conf, options)
-      }
-      if (errors.length) {
-        errors.splice(1)
-        buildSpinner.fail(chalk.red('Compile library failed!\n'))
-        return printBuildError(new Error(errors.join('\n\n')))
-      }
-      if (warnings.length) {
-        buildSpinner.warn(chalk.yellow('Library Compiled with warnings.\n'))
-        console.log(warnings.join('\n\n'))
-        console.log(
-          '\nSearch for the ' +
-            chalk.underline(chalk.yellow('keywords')) +
-            ' to learn more about each warning.'
-        )
-        console.log(
-          'To ignore, add ' +
-            chalk.cyan('// eslint-disable-next-line') +
-            ' to the line before.\n'
-        )
-      }
-    })
+    }
   } else {
-    if (library && !isEmptyObject(library)) {
-      webpackConf.plugins.push(
-        new webpack.DllReferencePlugin({
-          context: libContext,
-          manifest: require(path.join(libContext, `${library.name || 'vendor'}-manifest.json`))
-        })
-      )
-    }
-    if (libContext) {
-      vendorFiles = fs.readdirSync(libContext).map(file => {
-        if (/dll\.js$/.test(file)) {
-          return `${publicPath}${urlJoin(libraryDir, file)}`
-        }
-        return null
-      }).filter(Boolean)
-    }
-    if (appConf.template === 'complete') {
-      for (const mod in htmlPages) {
-        for (const page in htmlPages[mod]) {
-          const pageItem = htmlPages[mod][page]
-          webpackConf.plugins.push(new HtmlWebpackPlugin({
-            filename: `${mod}/${pageItem.filename}`,
-            template: pageItem.filepath,
-            alwaysWriteToDisk: true,
-            chunks: [`${mod}/${page}`],
-            vendorFiles
-          }))
-        }
-      }
-    } else {
-      webpackConf.plugins.push(new HtmlWebpackPlugin({
-        filename: 'index.html',
-        template: htmlPages['index'],
-        alwaysWriteToDisk: true,
-        chunks: 'index.js',
-        vendorFiles
-      }))
-    }
-    webpackConf = webpackMerge(webpackConf, customWebpackConf)
-    const compiler = createCompiler(webpack, webpackConf)
-    buildCompilerRun(compiler, buildSpinner, conf, options)
+    webpackConf.plugins.push(new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: htmlPages.index,
+      alwaysWriteToDisk: true,
+      chunks: 'index.js'
+    }))
   }
+  webpackConf = webpackMerge(webpackConf, customWebpackConf)
+  const compiler = createCompiler(webpack, webpackConf)
+  buildCompilerRun(compiler, buildSpinner, conf, options)
 }
 
 function buildCompilerRun (compiler, buildSpinner, conf, options) {
@@ -221,7 +118,6 @@ function buildCompilerRun (compiler, buildSpinner, conf, options) {
     if (err) {
       return printBuildError(err)
     }
-
     const { errors, warnings } = formatWebpackMessage(stats.toJson({}, true))
     const isSuccess = !errors.length && !warnings.length
     if (isSuccess) {

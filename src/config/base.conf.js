@@ -10,13 +10,13 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
   const imgLimit = (buildConfig.module && buildConfig.module.base64 && buildConfig.module.base64.imageLimit) || 2000
   const fontLimit = (buildConfig.module && buildConfig.module.base64 && buildConfig.module.base64.fontLimit) || 2000
   if (template === 'h5') {
-    imgName = 'img/[name].[ext]'
-    mediaName = fontName = extName = 'plugin/[name].[ext]'
+    imgName = 'img/[name].[hash:8].[ext]'
+    mediaName = fontName = extName = 'plugin/[name].[hash:8].[ext]'
   } else {
-    imgName = `${staticDirectory}/images/[name].[ext]`
-    mediaName = `${staticDirectory}/media/[name].[ext]`
-    fontName = `${staticDirectory}/fonts/[name].[ext]`
-    extName = `${staticDirectory}/ext/[name].[ext]`
+    imgName = `${staticDirectory}/images/[name].[hash:8].[ext]`
+    mediaName = `${staticDirectory}/media/[name].[hash:8].[ext]`
+    fontName = `${staticDirectory}/fonts/[name].[hash:8].[ext]`
+    extName = `${staticDirectory}/ext/[name].[hash:8].[ext]`
   }
   const jsConfUse = [
     {
@@ -24,22 +24,10 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       options: {
         cacheDirectory: true,
         presets: [
-          [require('babel-preset-env'), {
-            targets: {
-              browsers: browserList[platform],
-              uglify: true,
-              loose: false,
-              useBuiltIns: true
-            }
-          }]
+          [require('babel-preset-react-app'), { flow: false, typescript: true }]
         ],
         plugins: [
-          require('babel-plugin-transform-decorators-legacy').default,
-          require('babel-plugin-transform-class-properties'),
-          require('babel-plugin-transform-object-rest-spread'),
-          require('babel-plugin-syntax-dynamic-import'),
-          require('babel-plugin-transform-jscript'),
-          require('babel-plugin-transform-remove-strict-mode')
+          require('@babel/plugin-proposal-export-default-from').default
         ].concat(
           platform === 'pc' ? [
             require('babel-plugin-transform-es3-member-expression-literals'),
@@ -47,13 +35,13 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
           ] : []
         ).concat(
           framework === 'nerv' ? [
-            [require('babel-plugin-transform-react-jsx'), {
+            [require('@babel/plugin-transform-react-jsx').default, {
               pragma: 'Nerv.createElement'
             }]
           ] : []
         ).concat(
           framework === 'react' ? [
-            [require('babel-plugin-transform-react-jsx')]
+            [require('@babel/plugin-transform-react-jsx').default]
           ] : []
         )
       }

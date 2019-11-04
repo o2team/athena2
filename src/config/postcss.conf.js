@@ -16,7 +16,7 @@ exports.getPostcssPlugins = function (buildConfig = {}, platform = 'pc', templat
   const customPlugins = customPostcssConf.plugins || []
   plugins.push(require('postcss-flexbugs-fixes'))
   const defaultAutoprefixerConf = {
-    browsers: browserList[platform],
+    overrideBrowserslist: browserList[platform],
     flexbox: 'no-2009'
   }
 

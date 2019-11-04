@@ -75,7 +75,7 @@ exports.getEntry = function ({ appConf, appPath, moduleList = [], buildConfig = 
         if (!ext.length) {
           let entryPath = path.join(pagePath, item, `${item}.js`)
           if (!fs.existsSync(entryPath)) {
-            entryPath = path.join(pagePath, item, `index.js`)
+            entryPath = path.join(pagePath, item, 'index.js')
           }
           if (fs.existsSync(entryPath)) {
             entry[`${mod}/${item}`] = [
@@ -87,7 +87,7 @@ exports.getEntry = function ({ appConf, appPath, moduleList = [], buildConfig = 
     })
   } else {
     const simpleEntry = path.join(appPath, sourceRoot, 'index.js')
-    if (fs.existsSync(simpleEntry)) entry['index'] = new Array(simpleEntry)
+    if (fs.existsSync(simpleEntry)) entry.index = new Array(simpleEntry)
   }
 
   return entry
@@ -112,7 +112,7 @@ exports.getPageHtml = function ({ appConf, appPath, moduleList = [], buildConfig
           let filename = `${item}.html`
           let pageHtmlPath = path.join(pagePath, item, filename)
           if (!fs.existsSync(pageHtmlPath)) {
-            filename = `index.html`
+            filename = 'index.html'
             pageHtmlPath = path.join(pagePath, item, filename)
           }
           if (fs.existsSync(pageHtmlPath)) {
@@ -138,7 +138,7 @@ exports.getPageHtml = function ({ appConf, appPath, moduleList = [], buildConfig
   } else {
     const simpleHtml = path.join(appPath, sourceRoot, 'index.html')
     if (fs.existsSync(simpleHtml)) {
-      pageHtml['index'] = simpleHtml
+      pageHtml.index = simpleHtml
     }
   }
 
@@ -150,6 +150,7 @@ exports.createCompiler = function (webpack, config) {
   try {
     compiler = webpack(config)
   } catch (err) {
+    console.log(err)
     console.log(chalk.red('Failed to compile.'))
     console.log()
     console.log(err.message || err)

@@ -1,5 +1,5 @@
 const path = require('path')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
@@ -38,45 +38,18 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     js: defaultJSCompressConf
   }, buildConfig.module.compress)
 
-  if (outputCSS && !isEmptyObject(outputCSS)) {
-    for (const key in outputCSS) {
-      const extractFile = new ExtractTextPlugin(key)
-      const include = (outputCSS[key] || []).map(item => path.join(appPath, sourceRoot, item))
-      cssLoaders.push({
-        test: /\.(css|scss|sass)(\?.*)?$/,
-        include,
-        loader: extractFile.extract({
-          fallback: require.resolve('style-loader'),
-          use: [
-            {
-              loader: require.resolve('css-loader'),
-              options: {
-                importLoaders: 1,
-                minimize: true,
-                sourceMap
-              }
-            },
-            {
-              loader: require.resolve('postcss-loader'),
-              options: {
-                ident: 'postcss',
-                plugins: () => getPostcssPlugins(buildConfig, platform, template)
-              }
-            },
-            require.resolve('sass-loader')
-          ]
-        })
-      })
-      cssExtractPlugins.push(extractFile)
-    }
-    cssLoaders.push({
-      test: /\.(css|scss|sass)(\?.*)?$/,
+  cssLoaders.push({
+    test: /\.(css|scss|sass)(\?.*)?$/,
+    rules: [{
       use: [
-        require.resolve('style-loader'),
+        {
+          loader: MiniCssExtractPlugin.loader
+        },
         {
           loader: require.resolve('css-loader'),
           options: {
-            importLoaders: 1
+            importLoaders: 1,
+            sourceMap
           }
         },
         {
@@ -88,49 +61,17 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
         },
         require.resolve('sass-loader')
       ]
-    })
-  } else {
-    cssLoaders.push({
-      test: /\.(css|scss|sass)(\?.*)?$/,
-      loader: ExtractTextPlugin.extract({
-        fallback: require.resolve('style-loader'),
-        use: [
-          {
-            loader: require.resolve('css-loader'),
-            options: {
-              importLoaders: 1,
-              minimize: compress.css,
-              sourceMap
-            }
-          },
-          {
-            loader: require.resolve('postcss-loader'),
-            options: {
-              ident: 'postcss',
-              plugins: () => getPostcssPlugins(buildConfig, platform, template)
-            }
-          },
-          require.resolve('sass-loader')
-        ]
-      })
-    })
-    cssExtractPlugins.push(new ExtractTextPlugin({
-      filename: 'css/[name].css'
-    }))
-  }
+    }]
+  })
+  cssExtractPlugins.push(new MiniCssExtractPlugin({
+    filename: 'css/[name].css',
+    chunkFilename: 'css/[name].css'
+  }))
 
   const plugins = [
     new CleanWebpackPlugin(path.join(appPath, outputRoot), {
       verbose: false,
       exclude: [library && library.directory ? library.directory : '']
-    }),
-    new UglifyJsPlugin({
-      cache: true,
-      parallel: true,
-      sourceMap,
-      uglifyOptions: Object.assign({}, {
-        ie8: platform === 'pc'
-      }, compress.js)
     }),
     ...cssExtractPlugins
   ]
@@ -144,6 +85,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
   }
 
   return {
+    mode: 'production',
     devtool: devtool,
     module: {
       rules: [
@@ -161,6 +103,21 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     resolve: {
       mainFields: ['main']
     },
-    plugins: plugins
+    plugins: plugins,
+    optimization: {
+      minimizer: [
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap,
+          uglifyOptions: Object.assign({}, {
+            ie8: platform === 'pc'
+          }, compress.js)
+        })
+      ],
+      splitChunks: {
+        name: false
+      }
+    }
   }
 }
