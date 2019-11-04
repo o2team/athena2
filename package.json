@@ -83,7 +83,7 @@
     "vue-loader": "15.7.2",
     "vue-template-compiler": "2.6.10",
     "webpack": "4.41.2",
-    "webpack-dev-server": "3.9.0",
+    "webpack-dev-server": "3.1.11",
     "webpack-manifest-plugin": "2.2.0",
     "webpack-merge": "4.2.2",
     "zepto": "1.2.0"
