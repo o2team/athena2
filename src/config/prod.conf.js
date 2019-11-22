@@ -15,6 +15,7 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
   const cssExtractPlugins = []
   const devtool = template === 'h5' ? '' : 'hidden-source-map'
   const imgLoaders = []
+  const miniCssExtractPluginOption = buildConfig.miniCssExtractPluginOption || {}
   buildConfig.module = buildConfig.module || {}
   const defaultCSSCompressConf = {
     mergeRules: false,
@@ -63,10 +64,10 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
       ]
     }]
   })
-  cssExtractPlugins.push(new MiniCssExtractPlugin({
+  cssExtractPlugins.push(new MiniCssExtractPlugin(Object.assign({
     filename: 'css/[name].css',
     chunkFilename: 'css/[name].css'
-  }))
+  }, miniCssExtractPluginOption)))
 
   const plugins = [
     new CleanWebpackPlugin(path.join(appPath, outputRoot), {
