@@ -2,7 +2,7 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const { isEmptyObject } = require('../util')
 
@@ -107,11 +107,11 @@ module.exports = function (appPath, buildConfig, template, platform, framework) 
     plugins: plugins,
     optimization: {
       minimizer: [
-        new UglifyJsPlugin({
+        new TerserPlugin({
           cache: true,
           parallel: true,
           sourceMap,
-          uglifyOptions: Object.assign({}, {
+          terserOptions: Object.assign({}, {
             ie8: platform === 'pc'
           }, compress.js)
         })
